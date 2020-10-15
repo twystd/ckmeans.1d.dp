@@ -43,7 +43,7 @@ int main(int argc,char *argv[]) {
 }
 
 int testForSingleUniqueValue(const std::string& method) {
-    std::cout << "testForSingleUniqueValue" << std::endl;
+    std::cout << "testForSingleUniqueValue:" << method << std::endl;
      
     double  data[] = {-2.5,-2.5,-2.5,-2.5};
     cluster p = {{0,0,0,0}, {0},    {0}, {0}};
