@@ -1,5 +1,5 @@
 #include "Ckmeans.1d.dp.h"
-// #include "EWL2.h"
+#include "EWL2.h"
 
 // #include <algorithm>
 // #include <cmath>
@@ -74,7 +74,7 @@ void kmeans_1d_dp(const double *x, const size_t N,
   std::vector<double> y_sorted;
   bool is_equally_weighted = true;
 
-  if (! is_sorted) {
+  if (!is_sorted) {
      // Sort the index of x in increasing order of x
 
      // Option 1.
@@ -123,21 +123,18 @@ void kmeans_1d_dp(const double *x, const size_t N,
   Kmax = nUnique < Kmax ? nUnique : Kmax;
 
   if (nUnique > 1) { // The case when not all elements are equal.
-// 
-//     std::vector< std::vector< ldouble > > S( Kmax, std::vector<ldouble>(N) );
-//     std::vector< std::vector< size_t > > J( Kmax, std::vector<size_t>(N) );
-// 
-//     size_t Kopt;
-// 
-//     // Fill in dynamic programming matrix
-//     if(is_equally_weighted) {
-// 
-//       if(criterion == L2) {
-//         EWL2::fill_dp_matrix(x_sorted, y_sorted, S, J, method);
-//       } else {
+     std::vector< std::vector< ldouble > > S( Kmax, std::vector<ldouble>(N) );
+     std::vector< std::vector< size_t > > J( Kmax, std::vector<size_t>(N) );
+     size_t Kopt;
+ 
+     // Fill in dynamic programming matrix
+     if (is_equally_weighted) {
+        if (criterion == L2) {
+           EWL2::fill_dp_matrix(x_sorted, y_sorted, S, J, method);
+        } else {
 //         fill_dp_matrix(x_sorted, y_sorted, S, J, method, criterion);
-//       }
-// 
+        }
+
 //       // Choose an optimal number of levels between Kmin and Kmax
 //       if(estimate_k=="BIC") {
 //         Kopt = select_levels(x_sorted, J, Kmin, Kmax, BIC);
@@ -145,7 +142,7 @@ void kmeans_1d_dp(const double *x, const size_t N,
 //         Kopt = select_levels_3_4_12(x_sorted, J, Kmin, Kmax, BIC);
 //       }
 // 
-//     } else {
+     } else {
 // 
 //       fill_dp_matrix(x_sorted, y_sorted, S, J, method, criterion);
 // 
@@ -166,7 +163,7 @@ void kmeans_1d_dp(const double *x, const size_t N,
 //           Kopt = select_levels_weighted_3_4_12(x_sorted, y_sorted, J, Kmin, Kmax, BIC);
 //         }
 //       }
-//     }
+     }
 // 
 //     if (Kopt < Kmax) { // Reform the dynamic programming matrix S and J
 //       J.erase(J.begin() + Kopt, J.end());
