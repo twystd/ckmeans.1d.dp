@@ -263,24 +263,19 @@ void SMAWK
   }
 }
 
-void fill_row_q_SMAWK(int imin, int imax, int q,
-                      std::vector< std::vector<ldouble> > & S,
-                      std::vector< std::vector<size_t> > & J,
-                      const std::vector<ldouble> & sum_x,
-                      const std::vector<ldouble> & sum_x_sq)
-{
-  // Assumption: each cluster must have at least one point.
+   void fill_row_q_SMAWK(int imin, int imax, int q,
+                         std::vector< std::vector<ldouble> > & S,
+                         std::vector< std::vector<size_t> > & J,
+                         const std::vector<ldouble> & sum_x,
+                         const std::vector<ldouble> & sum_x_sq) {
+        // Assumption: each cluster must have at least one point.
+        std::vector<size_t> js(imax-q+1);
+        int abs = (q);
 
-  std::vector<size_t> js(imax-q+1);
-  //int abs = (q);
-  //std::generate(js.begin(), js.end(), [&] { return abs++; } );
+        std::generate(js.begin(), js.end(), [&] { return abs++; } );
 
-  std::cout << "STILL NEED TO FIGURE OUT WHY std::generate WON'T COMPILE" << std::endl;
-  assert(false);
+        SMAWK(imin, imax, 1, q, js, S, J, sum_x, sum_x_sq);
+   }
 
-  SMAWK(imin, imax, 1, q, js, S, J, sum_x, sum_x_sq);
-}
-
-
-}
+} // end namespace EWL2
 

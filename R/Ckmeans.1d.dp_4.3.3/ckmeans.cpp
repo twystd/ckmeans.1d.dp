@@ -56,24 +56,25 @@ template <int N, int K> void compare(cluster<N,K>& p, cluster<N,K>& q) {
 // FORWARD DECLARATIONS
 void testForSingleUniqueValue(const std::string&);
 void testForK1(const std::string&);
-
-
+void testForK2(const std::string&);
 
 // MAIN
 int main(int argc,char *argv[]) {
     std::cout << "ckmeans v4.3.3" << std::endl;
 
-    // test_Ckmeans.1d.dp::test_that("k==1"...
-    testForSingleUniqueValue("linear");
-    testForSingleUniqueValue("loglinear");
-    testForSingleUniqueValue("quadratic");
-    testForK1("linear");
-    testForK1("loglinear");
-    testForK1("quadratic");
+    std::string methods[] = { "linear", "loglinear", "quadratic" };
+
+    for (const std::string &method: methods) {
+        testForSingleUniqueValue(method);
+        testForK1(method);
+
+        testForK2(method);
+    }
 
     return 0;
 }
 
+// test_Ckmeans.1d.dp::test_that("k==1"...
 void testForSingleUniqueValue(const std::string& method) {
      std::cout << "- test for single unique value:" << method << std::endl;
      
@@ -94,6 +95,7 @@ void testForSingleUniqueValue(const std::string& method) {
      compare(p,q);
 }
 
+// test_Ckmeans.1d.dp::test_that("k==1"...
 void testForK1(const std::string& method) {
      static std::random_device rd;
      static std::mt19937 e2(rd());
@@ -101,15 +103,14 @@ void testForK1(const std::string& method) {
 
      std::cout << "- test for K=1:" << method << std::endl;
 
-     double data[100];
+     double         data[100];
      cluster<100,1> p = {{},{},{},{}};
-     double BIC;
+     cluster<100,1> q = {{}, {}, {}, {100}};
+     double         BIC;
 
      for (int i=0; i<100; i++) {
          data[i] = dist(rd);
      }
-
-     cluster<100,1> q = {{}, {}, {}, {100}};
 
      kmeans_1d_dp(data, 100, NULL, 1, 1,
                   p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), &BIC,
@@ -126,4 +127,24 @@ void testForK1(const std::string& method) {
      }
 }
 
+// test_Ckmeans.1d.dp::test_that("k==2"...
+void testForK2(const std::string& method) {
+     std::cout << "- test for K=2:" << method << std::endl;
+
+     double        data[] = {1,2,3,4,5,6,7,8,9,10};
+     cluster<10,2> p = {{},{},{},{}};
+     cluster<10,2> q = {{1, 1, 1, 1, 1, 2, 2, 2, 2, 2},{3,8},{10,10},{5,5}};
+     double BIC;
+
+     kmeans_1d_dp(data, 10, NULL, 2, 2,
+                  p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), &BIC,
+                  "BIC", method, L2);
+ 
+     // rebase cluster indices to match 'R'
+     for (size_t i=0; i<10; ++i) {
+         p.clusters[i]++;
+     }
+
+     compare(p,q);
+}
 

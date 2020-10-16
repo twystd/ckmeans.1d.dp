@@ -1,8 +1,10 @@
 CC = g++
-CFLAGS = -pedantic -Wall
+CXXFLAGS = -pedantic -Wall -std=c++11
 
 src = $(wildcard *.cpp)
 obj = $(src:.cpp=.o)
+
+.PHONY: clean
 
 # ckmeans.o: ckmeans.cpp
 # 	$(CC) $(CFLAGS) -c ckmeans.cpp -o $(OBJ)/$@
@@ -10,7 +12,7 @@ obj = $(src:.cpp=.o)
 all: ckmeans
 
 ckmeans: $(obj)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	$(CC) $(CXXFLAGS) -o $@ $^ 
 
 run: ckmeans
 	./ckmeans
