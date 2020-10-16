@@ -118,13 +118,15 @@ void testForK1(const std::string& method) {
                  p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), &BIC,
                  "BIC", method, L2);
 
-    // rebase cluster indices to match 'R'
-    for (size_t i=0; i<4; ++i) {
-        p.clusters[i]++;
-    }
-
-    compare(p,q);
-//  expect_equal(result$size, 100)
+     if (p.size != q.size) {
+        std::cout << " returned invalid size" << std::endl;
+        std::cout << "   expected: [ ";
+        std::copy(std::begin(q.size), std::end(q.size), std::ostream_iterator<double>(std::cout, " "));
+        std::cout << "]" << std::endl;
+        std::cout << "   got:      [ ";
+        std::copy(std::begin(p.size), std::end(p.size), std::ostream_iterator<double>(std::cout, " "));
+        std::cout << "]" << std::endl;
+     }
 }
 
 

@@ -132,22 +132,25 @@ void kmeans_1d_dp(const double *x, const size_t N,
         if (criterion == L2) {
            EWL2::fill_dp_matrix(x_sorted, y_sorted, S, J, method);
         } else {
+           std::cout << "OOPS, NOT IMPLEMENTED" << std::endl;
 //         fill_dp_matrix(x_sorted, y_sorted, S, J, method, criterion);
         }
 
-//       // Choose an optimal number of levels between Kmin and Kmax
-//       if(estimate_k=="BIC") {
-//         Kopt = select_levels(x_sorted, J, Kmin, Kmax, BIC);
-//       } else {
-//         Kopt = select_levels_3_4_12(x_sorted, J, Kmin, Kmax, BIC);
-//       }
-// 
+       // Choose an optimal number of levels between Kmin and Kmax
+       if (estimate_k == "BIC") {
+          Kopt = select_levels(x_sorted, J, Kmin, Kmax, BIC);
+       } else {
+          Kopt = select_levels_3_4_12(x_sorted, J, Kmin, Kmax, BIC);
+       }
+
      } else {
-// 
+       assert(false);
+
 //       fill_dp_matrix(x_sorted, y_sorted, S, J, method, criterion);
-// 
+//
 //       switch(criterion) {
 //       case L2Y:
+//            assert(false);
 //         if(estimate_k=="BIC") {
 //           Kopt = select_levels(y_sorted, J, Kmin, Kmax, BIC);
 //         } else {
@@ -156,44 +159,48 @@ void kmeans_1d_dp(const double *x, const size_t N,
 //         break;
 // 
 //       default:
-//         if(estimate_k=="BIC") {
-//           // Choose an optimal number of levels between Kmin and Kmax
-//           Kopt = select_levels_weighted(x_sorted, y_sorted, J, Kmin, Kmax, BIC);
-//         } else {
-//           Kopt = select_levels_weighted_3_4_12(x_sorted, y_sorted, J, Kmin, Kmax, BIC);
-//         }
+//            if (estimate_k=="BIC") {
+//               // Choose an optimal number of levels between Kmin and Kmax
+//               Kopt = select_levels_weighted(x_sorted, y_sorted, J, Kmin, Kmax, BIC);
+//            } else {
+//               Kopt = select_levels_weighted_3_4_12(x_sorted, y_sorted, J, Kmin, Kmax, BIC);
+//            }
 //       }
      }
-// 
-//     if (Kopt < Kmax) { // Reform the dynamic programming matrix S and J
+
+     if (Kopt < Kmax) { // Reform the dynamic programming matrix S and J
+        assert(false);
 //       J.erase(J.begin() + Kopt, J.end());
-//     }
-// 
-//     std::vector<int> cluster_sorted(N);
-// 
-//     // Backtrack to find the clusters beginning and ending indices
-//     if(is_equally_weighted && criterion == L1) {
+     }
+
+     std::vector<int> cluster_sorted(N);
+
+     // Backtrack to find the clusters beginning and ending indices
+     if(is_equally_weighted && criterion == L1) {
+        assert(false); 
 //         backtrack_L1(x_sorted, J, &cluster_sorted[0], centers, withinss, size);
-//     } else if (is_equally_weighted && criterion == L2) {
-//         backtrack(x_sorted, J, &cluster_sorted[0], centers, withinss, size);
-//     } else if(criterion == L2Y) {
+     } else if (is_equally_weighted && criterion == L2) {
+         backtrack(x_sorted, J, &cluster_sorted[0], centers, withinss, size);
+     } else if(criterion == L2Y) {
+        assert(false);
 //       backtrack_L2Y(x_sorted, y_sorted, J, &cluster_sorted[0],
 //                     centers, withinss, size);
 // 
-//     } else {
+     } else {
+        assert(false);
 //       backtrack_weighted(x_sorted, y_sorted, J, &cluster_sorted[0],
 //                          centers, withinss, size);
-//     }
-// 
-// #ifdef DEBUG
-//     std::cout << "backtrack done." << std::endl;
-// #endif
-// 
-//     for(size_t i = 0; i < N; ++i) {
-//       // Obtain clustering on data in the original order
-//       cluster[order[i]] = cluster_sorted[i];
-//     }
-// 
+     }
+
+#ifdef DEBUG
+    std::cout << "backtrack done." << std::endl;
+#endif
+
+     for (size_t i = 0; i < N; ++i) {
+         // Obtain clustering on data in the original order
+         cluster[order[i]] = cluster_sorted[i];
+     }
+
   } else {  // A single cluster that contains all elements
     for (size_t i=0; i<N; ++i) {
         cluster[i] = 0;
