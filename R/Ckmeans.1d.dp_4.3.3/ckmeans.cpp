@@ -1,5 +1,6 @@
 #include <iostream>
 #include <array>
+#include <random>
 
 #include "Ckmeans.1d.dp.h"
 
@@ -56,68 +57,64 @@ template <int N, int K> void compare(cluster<N,K>& p, cluster<N,K>& q) {
 void testForSingleUniqueValue(const std::string&);
 void testForK1(const std::string&);
 
+
+
 // MAIN
 int main(int argc,char *argv[]) {
     std::cout << "ckmeans v4.3.3" << std::endl;
 
+    // test_Ckmeans.1d.dp::test_that("k==1"...
     testForSingleUniqueValue("linear");
     testForSingleUniqueValue("loglinear");
     testForSingleUniqueValue("quadratic");
-
     testForK1("linear");
+    testForK1("loglinear");
+    testForK1("quadratic");
 
     return 0;
 }
 
 void testForSingleUniqueValue(const std::string& method) {
-    std::cout << "- test for single unique value:" << method << std::endl;
+     std::cout << "- test for single unique value:" << method << std::endl;
      
-    double       data[] = {-2.5,-2.5,-2.5,-2.5};
-    cluster<4,1> p = {{0,0,0,0}, {0},    {0}, {0}};
-    cluster<4,1> q = {{1,1,1,1}, {-2.5}, {0}, {4}};
-    double       BIC;
+     double       data[] = {-2.5,-2.5,-2.5,-2.5};
+     cluster<4,1> p = {{},{},{},{}};
+     cluster<4,1> q = {{1,1,1,1}, {-2.5}, {0}, {4}};
+     double       BIC;
 
-    kmeans_1d_dp(data, 4, NULL, 1, 1,
-                 p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), &BIC,
-                 "BIC" ,method, L2);
+     kmeans_1d_dp(data, 4, NULL, 1, 1,
+                  p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), &BIC,
+                  "BIC" ,method, L2);
 
-    // rebase cluster indices to match 'R'
-    for (size_t i=0; i<4; ++i) {
-        p.clusters[i]++;
-    }
+     // rebase cluster indices to match 'R'
+     for (size_t i=0; i<4; ++i) {
+         p.clusters[i]++;
+     }
 
-    compare(p,q);
+     compare(p,q);
 }
 
 void testForK1(const std::string& method) {
-    std::cout << "- test for K=1:" << method << std::endl;
-     
-//  TODO initialise with random values x <- rep(1, 100) 
-    double data[] = {     1, 2, 3, 4, 5, 6, 7, 8,10,  9,11,12,13,14,15,16,17,18,19,
-                      20,21,22,23,24,25,26,27,28,29,  30,31,32,33,34,35,36,37,38,39,
-                      40,41,42,43,44,45,46,47,48,49,  50,51,52,53,54,55,56,57,58,59,
-                      60,61,62,63,64,65,66,67,68,69,  70,71,72,73,74,75,76,77,78,79,
-                      80,81,82,83,84,85,86,87,88,89,  90,91,92,93,94,95,96,97,98,99,
-                      100 };
+     static std::random_device rd;
+     static std::mt19937 e2(rd());
+     static std::uniform_real_distribution<> dist(-100.0, +100.0);
 
-    cluster<100,1> p = {{ 0,0,0,0,0,0,0,0,0,0,  0,0,0,0,0,0,0,0,0,0,
-                          0,0,0,0,0,0,0,0,0,0,  0,0,0,0,0,0,0,0,0,0,
-                          0,0,0,0,0,0,0,0,0,0,  0,0,0,0,0,0,0,0,0,0,
-                          0,0,0,0,0,0,0,0,0,0,  0,0,0,0,0,0,0,0,0,0,
-                          0,0,0,0,0,0,0,0,0,0,  0,0,0,0,0,0,0,0,0,0 }, {0}, {0}, {0}};
+     std::cout << "- test for K=1:" << method << std::endl;
 
-    cluster<100,1> q = {{ 0,0,0,0,0,0,0,0,0,0,  0,0,0,0,0,0,0,0,0,0,
-                          0,0,0,0,0,0,0,0,0,0,  0,0,0,0,0,0,0,0,0,0,
-                          0,0,0,0,0,0,0,0,0,0,  0,0,0,0,0,0,0,0,0,0,
-                          0,0,0,0,0,0,0,0,0,0,  0,0,0,0,0,0,0,0,0,0,
-                          0,0,0,0,0,0,0,0,0,0,  0,0,0,0,0,0,0,0,0,0 }, {0}, {0}, {100}};
+     double data[100];
+     cluster<100,1> p = {{},{},{},{}};
+     double BIC;
 
-    double BIC;
+     for (int i=0; i<100; i++) {
+         data[i] = dist(rd);
+     }
 
-    kmeans_1d_dp(data, 100, NULL, 1, 1,
-                 p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), &BIC,
-                 "BIC", method, L2);
+     cluster<100,1> q = {{}, {}, {}, {100}};
 
+     kmeans_1d_dp(data, 100, NULL, 1, 1,
+                  p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), &BIC,
+                  "BIC", method, L2);
+ 
      if (p.size != q.size) {
         std::cout << " returned invalid size" << std::endl;
         std::cout << "   expected: [ ";
