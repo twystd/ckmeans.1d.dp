@@ -23,13 +23,19 @@ template <int N, int K> void compare(cluster<N,K>& p, cluster<N,K>& q) {
      }
 
      if (p.centers != q.centers) {
-        std::cout << " returned invalid centers" << std::endl;
-        std::cout << "   expected: [ ";
-        std::copy(std::begin(q.centers), std::end(q.centers), std::ostream_iterator<double>(std::cout, " "));
-        std::cout << "]" << std::endl;
-        std::cout << "   got:      [ ";
-        std::copy(std::begin(p.centers), std::end(p.centers), std::ostream_iterator<double>(std::cout, " "));
-        std::cout << "]" << std::endl;
+        for (int i=0; i<K; i++) {
+            double d = abs(p.centers[i] - q.centers[i]);
+
+            if (d > 0.00001) {
+               std::cout << " returned invalid centers" << std::endl;
+               std::cout << "   expected: [ ";
+               std::copy(std::begin(q.centers), std::end(q.centers), std::ostream_iterator<double>(std::cout, " "));
+               std::cout << "]" << std::endl;
+               std::cout << "   got:      [ ";
+               std::copy(std::begin(p.centers), std::end(p.centers), std::ostream_iterator<double>(std::cout, " "));
+               break;
+            }
+        }
      }
 
      if (p.withins != q.withins) {
@@ -57,6 +63,7 @@ template <int N, int K> void compare(cluster<N,K>& p, cluster<N,K>& q) {
 void testForSingleUniqueValue(const std::string&);
 void testForK1(const std::string&);
 void testForK2(const std::string&);
+void testForNltK(const std::string&);
 
 // MAIN
 int main(int argc,char *argv[]) {
@@ -69,6 +76,7 @@ int main(int argc,char *argv[]) {
         testForK1(method);
 
         testForK2(method);
+        testForNltK(method);
     }
 
     return 0;
@@ -137,6 +145,27 @@ void testForK2(const std::string& method) {
      double BIC;
 
      kmeans_1d_dp(data, 10, NULL, 2, 2,
+                  p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), &BIC,
+                  "BIC", method, L2);
+ 
+     // rebase cluster indices to match 'R'
+     for (size_t i=0; i<10; ++i) {
+         p.clusters[i]++;
+     }
+
+     compare(p,q);
+}
+
+// test_Ckmeans.1d.dp::test_that("n<=k"...
+void testForNltK(const std::string& method) {
+     std::cout << "- test for N<=K:" << method << std::endl;
+
+     double        data[] = {3, 2, -5.4, 0.1};
+     cluster<4,4> p = {{},{},{},{}};
+     cluster<4,4> q = {{4, 3, 1, 2},{-5.4, 0.1, 2, 3},{0, 0, 0, 0},{1, 1, 1, 1}};
+     double BIC;
+
+     kmeans_1d_dp(data, 4, NULL, 4, 4,
                   p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), &BIC,
                   "BIC", method, L2);
  
