@@ -34,17 +34,9 @@ bool compi(size_t i, size_t j) {
    return px[i] < px[j];
 }
 
-void kmeans_1d_dp(const double *x, const size_t N,
-                  const double *y,
-                  size_t Kmin, size_t Kmax,
-                  int    *cluster,
-                  double *centers,
-                  double *withinss,
-                  double *size,
-                  double *BIC,
-                  const std::string &estimate_k,
-                  const std::string &method,
-                  const enum DISSIMILARITY criterion)
+void kmeans_1d_dp(const double *x, const size_t N, const double *y, size_t Kmin, size_t Kmax,
+                  int    *cluster, double *centers, double *withinss, double *size, double *BIC,
+                  const std::string &estimate_k, const std::string &method, const enum DISSIMILARITY criterion)
 {
   // Input:
   //  x -- an array of double precision numbers, not necessarily sorted
@@ -132,8 +124,7 @@ void kmeans_1d_dp(const double *x, const size_t N,
         if (criterion == L2) {
            EWL2::fill_dp_matrix(x_sorted, y_sorted, S, J, method);
         } else {
-           std::cout << "OOPS, NOT IMPLEMENTED" << std::endl;
-//         fill_dp_matrix(x_sorted, y_sorted, S, J, method, criterion);
+           fill_dp_matrix(x_sorted, y_sorted, S, J, method, criterion);
         }
 
        // Choose an optimal number of levels between Kmin and Kmax
@@ -144,33 +135,29 @@ void kmeans_1d_dp(const double *x, const size_t N,
        }
 
      } else {
-       assert(false);
+       fill_dp_matrix(x_sorted, y_sorted, S, J, method, criterion);
 
-//       fill_dp_matrix(x_sorted, y_sorted, S, J, method, criterion);
-//
-//       switch(criterion) {
-//       case L2Y:
-//            assert(false);
-//         if(estimate_k=="BIC") {
-//           Kopt = select_levels(y_sorted, J, Kmin, Kmax, BIC);
-//         } else {
-//           Kopt = select_levels_3_4_12(y_sorted, J, Kmin, Kmax, BIC);
-//         }
-//         break;
-// 
-//       default:
-//            if (estimate_k=="BIC") {
-//               // Choose an optimal number of levels between Kmin and Kmax
-//               Kopt = select_levels_weighted(x_sorted, y_sorted, J, Kmin, Kmax, BIC);
-//            } else {
-//               Kopt = select_levels_weighted_3_4_12(x_sorted, y_sorted, J, Kmin, Kmax, BIC);
-//            }
-//       }
+       switch(criterion) {
+       case L2Y:
+            if (estimate_k=="BIC") {
+               Kopt = select_levels(y_sorted, J, Kmin, Kmax, BIC);
+            } else {
+               Kopt = select_levels_3_4_12(y_sorted, J, Kmin, Kmax, BIC);
+            }
+            break;
+ 
+       default:
+            if (estimate_k=="BIC") {
+               // Choose an optimal number of levels between Kmin and Kmax
+               Kopt = select_levels_weighted(x_sorted, y_sorted, J, Kmin, Kmax, BIC);
+            } else {
+               Kopt = select_levels_weighted_3_4_12(x_sorted, y_sorted, J, Kmin, Kmax, BIC);
+            }
+       }
      }
 
      if (Kopt < Kmax) { // Reform the dynamic programming matrix S and J
-        assert(false);
-//       J.erase(J.begin() + Kopt, J.end());
+       J.erase(J.begin() + Kopt, J.end());
      }
 
      std::vector<int> cluster_sorted(N);
@@ -187,9 +174,7 @@ void kmeans_1d_dp(const double *x, const size_t N,
 //                     centers, withinss, size);
 // 
      } else {
-        assert(false);
-//       backtrack_weighted(x_sorted, y_sorted, J, &cluster_sorted[0],
-//                          centers, withinss, size);
+       backtrack_weighted(x_sorted, y_sorted, J, &cluster_sorted[0], centers, withinss, size);
      }
 
 #ifdef DEBUG

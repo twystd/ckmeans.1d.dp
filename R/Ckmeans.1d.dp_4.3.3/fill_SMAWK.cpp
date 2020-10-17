@@ -299,10 +299,8 @@ void fill_row_q_SMAWK(int imin, int imax, int q,
 
   std::vector<size_t> js(imax-q+1);
   int abs = (q);
-  //std::generate(js.begin(), js.end(), [&] { return abs++; } );
 
-  std::cout << "FIXME: std::generate doesn't compile with clang" << std::endl;
-  assert(false);
+  std::generate(js.begin(), js.end(), [&] { return abs++; } );
 
   SMAWK(imin, imax, 1, q, js, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq, criterion);
 }

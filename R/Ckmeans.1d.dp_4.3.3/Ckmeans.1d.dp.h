@@ -99,30 +99,30 @@ size_t select_levels_3_4_12(const std::vector<double> & x,
 //     const std::vector<double> & y,
 //     std::vector< std::vector< ldouble > > & S,
 //     std::vector< std::vector< size_t > > & J);
-// 
-// void backtrack_weighted(
-//     const std::vector<double> & x, const std::vector<double> & y,
-//     const std::vector< std::vector< size_t > > & J,
-//     std::vector<size_t> & counts, std::vector<double> & weights,
-//     const int K);
-// 
-// void backtrack_weighted(
-//     const std::vector<double> & x, const std::vector<double> & y,
-//     const std::vector< std::vector< size_t > > & J,
-//     int* cluster, double* centers, double* withinss,
-//     double* weights /*int* weights*/);
-// 
-// size_t select_levels_weighted(
-//     const std::vector<double> & x, const std::vector<double> & y,
-//     const std::vector< std::vector< size_t > > & J,
-//     size_t Kmin, size_t Kmax, double *BIC);
-// 
-// size_t select_levels_weighted_3_4_12(
-//     const std::vector<double> & x, const std::vector<double> & y,
-//     const std::vector< std::vector< size_t > > & J,
-//     size_t Kmin, size_t Kmax, double *BIC);
-// 
-// void range_of_variance(
-//     const std::vector<double> & x,
-//     double & variance_min, double & variance_max);
-// 
+
+void backtrack_weighted(
+    const std::vector<double> & x, const std::vector<double> & y,
+    const std::vector< std::vector< size_t > > & J,
+    std::vector<size_t> & counts, std::vector<double> & weights,
+    const int K);
+
+void backtrack_weighted(
+    const std::vector<double> & x, const std::vector<double> & y,
+    const std::vector< std::vector< size_t > > & J,
+    int* cluster, double* centers, double* withinss,
+    double* weights /*int* weights*/);
+
+size_t select_levels_weighted(
+    const std::vector<double> & x, const std::vector<double> & y,
+    const std::vector< std::vector< size_t > > & J,
+    size_t Kmin, size_t Kmax, double *BIC);
+
+size_t select_levels_weighted_3_4_12(
+    const std::vector<double> & x, const std::vector<double> & y,
+    const std::vector< std::vector< size_t > > & J,
+    size_t Kmin, size_t Kmax, double *BIC);
+
+void range_of_variance(
+    const std::vector<double> & x,
+    double & variance_min, double & variance_max);
+
