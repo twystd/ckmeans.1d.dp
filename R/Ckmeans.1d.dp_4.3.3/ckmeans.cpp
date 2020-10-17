@@ -65,7 +65,7 @@ void testWeightedInput(const std::string& method) {
        compare(p,q);
      }
 
-     // NOTE: kmeans_1d_dp with range of K seems to reassign arrays and corrupts 'q' (code below works fine though)
+     // NOTE: kmeans_1d_dp with range of K somehow seems to corrupt struct cluster arrays (no idea why - code below works fine though)
      { double data[]    = {-0.9, 1, 1.1, 1.9, 2, 2.1};
        double weights[] = { 3,   1, 2,   2,   1, 1  };
        int    clusters[6];
