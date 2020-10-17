@@ -20,6 +20,7 @@ void testGivenK(const std::string&);
 void testNlteK(const std::string&);
 void testKeq2(const std::string&);
 void testKeq1(const std::string&);
+void testN10K3(const std::string& method);
 
 
 // MAIN
@@ -31,14 +32,15 @@ int main(int argc,char *argv[]) {
     for (const std::string &method: methods) {
     //     std::cout << std::endl << method << std::endl;
     // 
-    //     testWeightedInput("linear");
+    //     testWeightedInput(method);
     //     testGivenK(method);
     //     testNlteK(method);
     //     testKeq2(method);
     //     testKeq1(method);
+    //     testN10K3(method);
     }
     
-    testWeightedInput("linear");
+    testN10K3("linear");
 
     return 0;
 }
@@ -111,7 +113,7 @@ void testGivenK(const std::string& method) {
      compare(p,q);
 
      // Ref. https://stackoverflow.com/questions/8637460/k-means-return-value-in-r
-
+     //
      // totss.truth <- sum(scale(x, scale=FALSE)^2)
      // expect_equal(result$totss, totss.truth)
      // expect_equal(result$tot.withinss, 2)
@@ -214,6 +216,26 @@ void testKeq1(const std::string& method) {
 }
 
 // test_that("n==10, k==3", {
+void testN10K3(const std::string& method) {
+     std::cout << "   test with n=10, k=3" << std::endl;
+
+     double        data[]    = {3, 3, 3, 3, 1, 1, 1, 2, 2, 2};
+     cluster<10,3> p = {{},{},{},{}};
+     cluster<10,3> q = {{3, 3, 3, 3, 1, 1, 1, 2, 2, 2},{1, 2, 3},{0, 0, 0},{3, 3, 4}};
+     double BIC;
+
+     kmeans_1d_dp(data, 10, NULL, 3, 3,
+                  p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), &BIC,
+                  "BIC", method, L2);
+ 
+     // rebase cluster indices to match 'R'
+     for (size_t i=0; i<10; ++i) {
+         p.clusters[i]++;
+     }
+
+     compare(p,q);
+}
+
 // test_that("n==14, k==8", {
 // test_that("Estimating k example set 1", {
 // test_that("Estimating k example set 2", {
