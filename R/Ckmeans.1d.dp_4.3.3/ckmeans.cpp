@@ -20,8 +20,10 @@ void testGivenK(const std::string&);
 void testNlteK(const std::string&);
 void testKeq2(const std::string&);
 void testKeq1(const std::string&);
-void testN10K3(const std::string& method);
-void testN14K8(const std::string& method);
+void testN10K3(const std::string&);
+void testN14K8(const std::string&);
+void testEstimateKExampleSet1(const std::string& method);
+void testEstimateKExampleSet2(const std::string& method);
 
 
 // MAIN
@@ -40,9 +42,11 @@ int main(int argc,char *argv[]) {
     //     testKeq1(method);
     //     testN10K3(method);
     //     testN14K8(method);
+    //     testEstimateKExampleSet1(method);
+    //     testEstimateKExampleSet2(method);
     }
     
-    testN14K8("linear");
+    testEstimateKExampleSet2("linear");
 
     return 0;
 }
@@ -262,8 +266,131 @@ void testN14K8(const std::string& method) {
      compare(p,q);
 }
 
-// test_that("Estimating k example set 1", {
-// test_that("Estimating k example set 2", {
+// test_that("Estimating k example set 1"...
+//
+// NOTE: kmeans_1d_dp with range of K somehow seems to corrupt struct cluster arrays (no idea why - code below works fine though)
+//
+// FIXME segfault
+void testEstimateKExampleSet1(const std::string& method) {
+     std::cout << "   test estimate K, example set 1" << std::endl;
+
+     std::cout << "*** ERROR: SEFAULT AND WRONG RESULT FOR PART 3" << std::endl;
+
+//     { double data[]    = {0.9, 1, 1.1, 1.9, 2, 2.1};
+//       int    clusters[6];
+//       double centers[6];
+//       double withins[6];
+//       double sizes[6];
+//       double BIC;
+//
+//       kmeans_1d_dp(data, 6, NULL, 1, 6,
+//                    clusters, centers, withins, sizes, &BIC,
+//                    "BIC", method, L2);
+// 
+//       cluster<6,2> p = { {clusters[0],clusters[1],clusters[2],clusters[3],clusters[4],clusters[5]},
+//                          {centers[0], centers[1]},
+//                          {withins[0], withins[1]},
+//                          {sizes[0],   sizes[1] }
+//                        };
+//
+//       cluster<6,2> q = {{0,0,0,1,1,1},{1,2},{0.02,0.02},{3,3}};
+//
+//       // rebase cluster indices to match 'R'
+//       for (size_t i=0; i<6; ++i) {
+//           clusters[i]++;
+//       }
+//
+//       compare(p,q);
+//     }
+//
+//     { double data[] = {2.1, 2, 1.9, 1.1, 1, 0.9};
+//       int    clusters[6];
+//       double centers[6];
+//       double withins[6];
+//       double sizes[6];
+//       double BIC;
+//
+//       kmeans_1d_dp(data, 6, NULL, 1, 6,
+//                    clusters, centers, withins, sizes, &BIC,
+//                    "BIC", method, L2);
+// 
+//       cluster<6,2> p = { {clusters[0],clusters[1],clusters[2],clusters[3],clusters[4],clusters[5]},
+//                          {centers[0], centers[1]},
+//                          {withins[0], withins[1]},
+//                          {sizes[0],   sizes[1] }
+//                        };
+//
+//       cluster<6,2> q = {{1,1,1,0,0,0},{1,2},{0.02,0.02},{3,3}};
+//
+//       // rebase cluster indices to match 'R'
+//       for (size_t i=0; i<6; ++i) {
+//           clusters[i]++;
+//       }
+//
+//       compare(p,q);
+//     }
+//
+//     { double data[] = {2.1, 2, 1.9, 1.1, 1, 0.9};
+//       int    clusters[6];
+//       double centers[6];
+//       double withins[6];
+//       double sizes[6];
+//       double BIC;
+//
+//       kmeans_1d_dp(data, 6, NULL, 1, 10,
+//                    clusters, centers, withins, sizes, &BIC,
+//                    "BIC", method, L2);
+// 
+//       cluster<6,2> p = { {clusters[0],clusters[1],clusters[2],clusters[3],clusters[4],clusters[5]},
+//                          {centers[0], centers[1]},
+//                          {withins[0], withins[1]},
+//                          { 10 }
+//                        };
+//
+//       cluster<6,2> q = {{1,1,1,0,0,0},{1,2},{0.02,0.02},{3,3}};
+//
+//       // rebase cluster indices to match 'R'
+//       for (size_t i=0; i<6; ++i) {
+//           clusters[i]++;
+//       }
+//
+//       compare(p,q);
+//     }
+}
+
+// test_that("Estimating k example set 2"...
+//
+// NOTE: kmeans_1d_dp with range of K somehow seems to corrupt struct cluster arrays (no idea why - code below works fine though)
+void testEstimateKExampleSet2(const std::string& method) {
+     std::cout << "   test estimate K, example set 2" << std::endl;
+
+     double data[]    = {3.5, 3.6, 3.7, 3.1, 1.1, 0.9, 0.8, 2.2, 1.9, 2.1};
+     int    clusters[10];
+     double centers[10];
+     double withins[10];
+     double sizes[10];
+     double BIC;
+
+     kmeans_1d_dp(data, 10, NULL, 2, 5,
+                  clusters, centers, withins, sizes, &BIC,
+                  "BIC", method, L2);
+ 
+     // rebase cluster indices to match 'R'
+     for (size_t i=0; i<10; ++i) {
+         clusters[i]++;
+     }
+
+     cluster<10,3> p = { {clusters[0],clusters[1],clusters[2],clusters[3],clusters[4],clusters[5],clusters[6],clusters[7],clusters[8],clusters[9]},
+                         {centers[0], centers[1], centers[2]},
+                         {withins[0], withins[1], withins[2]},
+                         {sizes[0],   sizes[1],  sizes[2] }
+                       };
+
+     cluster<10,3> q = {{3, 3, 3, 3, 1, 1, 1, 2, 2, 2},{0.933333333333, 2.066666666667, 3.475},{0.0466666666667, 0.0466666666667, 0.2075},{3, 3, 4}};
+
+     compare(p,q);
+     
+}
 // test_that("Estimating k example set 3 cosine", {
 // test_that("Estimating k example set 4 gamma", {
 
