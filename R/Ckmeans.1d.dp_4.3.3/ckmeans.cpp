@@ -1,5 +1,8 @@
 #include <iostream>
 #include <array>
+#include <vector>
+#include <iomanip>
+#include <map>
 #include <random>
 #include <cmath>
 
@@ -30,6 +33,8 @@ void testEstimateKExampleSet2(const std::string& method);
 void testEstimateKExampleSet3(const std::string& method);
 void testEstimateKExampleSet4(const std::string& method);
 
+void testTaps();
+
 // MAIN
 int main(int argc,char *argv[]) {
     std::cout << "ckmeans v4.3.3" << std::endl;
@@ -52,9 +57,53 @@ int main(int argc,char *argv[]) {
          testEstimateKExampleSet4(method);
     }
     
-//    testEstimateKExampleSet1("linear");
+    testTaps();
 
     return 0;
+}
+
+
+void testTaps() {
+     double taps[] = { 4.570271991, 5.063594027, 5.603539973, 6.102690998, 6.642708943, 7.141796968, 7.710649857, 8.192470916,
+                       4.506176116, 5.045971061, 5.591722996, 6.114172975, 6.619153989, 7.13578898,  7.693071891, 8.203885893,
+                       4.52956007,  5.057670039, 5.591721996, 6.13742393,  6.630941966, 7.1766839,   7.69897488,  8.227207848,
+                       4.52956007,  5.069284016, 5.603428973, 6.102591998, 6.613455,    7.147644957, 7.69912088,  8.215609871,
+                       4.517865093, 5.022782107, 5.580101018, 6.096715009, 6.654118921, 7.1763719,   7.681405914, 8.215537871,
+                                    5.133092891, 5.545395086, 6.067721066, 6.578564068, 7.130096991, 7.652464971, 8.13427303,
+                       4.494581138, 5.040234073, 5.562732052, 6.079333043, 6.624973977, 7.141650968, 7.664070948, 8.198270905,
+                       4.52940807,  5.040295073, 5.556940064, 6.131584941, 6.654145921, 7.193876866, 7.722112835, 8.244539814,
+                       4.523631082, 5.046071061, 5.586102007, 6.09099502,  6.596029034, 7.130224991, 7.652501971, 8.180805939,
+                       4.517979093, 5.046165061, 5.551068075, 6.073547054, 6.607636011, 7.165018923, 7.687334903, 8.238953825,
+                       4.517911093, 5.069403016, 5.586174007, 6.108568986, 6.578649068, 7.147523957, 7.681606914, 8.26211078
+                     };
+
+     cluster<87,87> p = {{},{},{},{}};
+     std::map<int, std::vector<double>> beats;
+
+     kmeans_1d_dp(taps, 87, NULL, 1, 87,
+                  p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), p.BIC.data(),
+                 "BIC", "linear", L2);
+ 
+     rebase(p);
+
+     for (int i=0; i<87; i++) {
+         int beat = p.clusters[i];
+
+         beats[beat].push_back(taps[i]) ;
+     }
+
+     std::cout << "TAPS:" << std::endl << "   ";
+     std::copy(std::begin(p.clusters), std::end(p.clusters), std::ostream_iterator<int>(std::cout, " "));
+     std::cout << std::endl;
+
+     for (std::map<int,std::vector<double>>::iterator it=beats.begin(); it != beats.end(); ++it) {
+         std::cout << "   " << it->first << " => ";
+         for (std::vector<double>::iterator j=it->second.begin(); j != it->second.end(); ++j) {
+             std::cout << std::setprecision(6) << std::setfill(' ') << std::setw(9) << std::left << *j;
+         }
+         // std::copy(std::begin(it->second), std::end(it->second), std::ostream_iterator<double>(std::cout, " "));
+         std::cout << std::endl;
+     }
 }
 
 // test_that("Weighted input", {
