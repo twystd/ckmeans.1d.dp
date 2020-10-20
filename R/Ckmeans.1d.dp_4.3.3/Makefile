@@ -1,5 +1,5 @@
 CC = g++
-CXXFLAGS = -pedantic -Wall -std=c++11
+CXXFLAGS = -pedantic -Wall -std=c++11 -g
 
 src = $(wildcard *.cpp)
 obj = $(src:.cpp=.o)
