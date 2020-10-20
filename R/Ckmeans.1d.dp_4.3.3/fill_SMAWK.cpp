@@ -33,7 +33,6 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
-#include <cassert>
 #include <stack>
 
 #include "Ckmeans.1d.dp.h"

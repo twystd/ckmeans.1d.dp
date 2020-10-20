@@ -23,7 +23,6 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
-#include <cassert>
 #include <stack>
 #include <cmath>
 
