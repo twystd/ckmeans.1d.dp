@@ -26,6 +26,7 @@ void testN14K8(const std::string&);
 void testEstimateKExampleSet1(const std::string& method);
 void testEstimateKExampleSet2(const std::string& method);
 void testEstimateKExampleSet3(const std::string& method);
+void testEstimateKExampleSet4(const std::string& method);
 
 // MAIN
 int main(int argc,char *argv[]) {
@@ -34,21 +35,22 @@ int main(int argc,char *argv[]) {
     std::string methods[] = { "linear", "loglinear", "quadratic" };
 
     for (const std::string &method: methods) {
-    //     std::cout << std::endl << method << std::endl;
-    // 
-    //     testWeightedInput(method);
-    //     testGivenK(method);
-    //     testNlteK(method);
-    //     testKeq2(method);
-    //     testKeq1(method);
-    //     testN10K3(method);
-    //     testN14K8(method);
-    //     testEstimateKExampleSet1(method);
-    //     testEstimateKExampleSet2(method);
-    //     testEstimateKExampleSet3(method);
+         std::cout << std::endl << method << std::endl;
+     
+         testWeightedInput(method);
+         testGivenK(method);
+         testNlteK(method);
+         testKeq2(method);
+         testKeq1(method);
+         testN10K3(method);
+         testN14K8(method);
+         testEstimateKExampleSet1(method);
+         testEstimateKExampleSet2(method);
+         testEstimateKExampleSet3(method);
+         testEstimateKExampleSet4(method);
     }
     
-    testEstimateKExampleSet3("linear");
+    testEstimateKExampleSet1("linear");
 
     return 0;
 }
@@ -276,7 +278,7 @@ void testN14K8(const std::string& method) {
 void testEstimateKExampleSet1(const std::string& method) {
      std::cout << "   test estimate K, example set 1" << std::endl;
 
-     std::cout << "*** ERROR: SEFAULT AND WRONG RESULT FOR PART 3" << std::endl;
+     std::cout << "     *** ERROR: SEGFAULT AND WRONG RESULT FOR PART 3" << std::endl;
 
 //     { double data[]    = {0.9, 1, 1.1, 1.9, 2, 2.1};
 //       int    clusters[6];
@@ -399,10 +401,12 @@ void testEstimateKExampleSet2(const std::string& method) {
 void testEstimateKExampleSet3(const std::string& method) {
      std::cout << "   test estimate K, example set 3 (cosine)" << std::endl;
 
+     // x <- cos((-10:10))
      double data[] = { -0.8390715,-0.9111303,-0.1455000,0.7539023,0.9601703,0.2836622,
                        -0.6536436,-0.9899925,-0.4161468,0.5403023,1.0000000,0.5403023,
                        -0.4161468,-0.9899925,-0.6536436,0.2836622,0.9601703,0.7539023,
-                       -0.1455000,-0.9111303,-0.8390715};
+                       -0.1455000,-0.9111303,-0.8390715
+                     };
 
      int    clusters[21];
      double centers[21];
@@ -421,7 +425,8 @@ void testEstimateKExampleSet3(const std::string& method) {
 
      cluster<21,2> p = { { clusters[0], clusters[1], clusters[2], clusters[3], clusters[4], clusters[5], clusters[6], clusters[7], clusters[8], clusters[9],
                            clusters[10],clusters[11],clusters[12],clusters[13],clusters[14],clusters[15],clusters[16],clusters[17],clusters[18],clusters[19],
-                           clusters[20]},
+                           clusters[20]
+                         },
                          {centers[0], centers[1]},
                          {withins[0], withins[1]},
                          {sizes[0],   sizes[1]  }
@@ -432,15 +437,55 @@ void testEstimateKExampleSet3(const std::string& method) {
      compare(p,q);
      
 }
+
 // test_that("Estimating k example set 4 gamma", {
+//
+// NOTE: kmeans_1d_dp with range of K somehow seems to corrupt struct cluster arrays (no idea why - code below works fine though)
+void testEstimateKExampleSet4(const std::string& method) {
+     std::cout << "   test estimate K, example set 4 (gamma)" << std::endl;
+
+     // x <- dgamma(seq(1,10, by=0.5), shape=2, rate=1)
+     double data[] = { 0.3678794412,0.3346952402,0.2706705665,0.2052124966,0.1493612051,
+                       0.1056908420,0.0732625556,0.0499904844,0.0336897350,0.0224772429,
+                       0.0148725131,0.0097723548,0.0063831738,0.0041481328,0.0026837010,
+                       0.0017294811,0.0011106882,0.0007110924,0.0004539993
+                     };
+
+     int    clusters[19];
+     double centers[19];
+     double withins[19];
+     double sizes[19];
+     double BIC;
+
+     kmeans_1d_dp(data, 19, NULL, 1, 19,
+                  clusters, centers, withins, sizes, &BIC,
+                  "BIC", method, L2);
+ 
+     // rebase cluster indices to match 'R'
+     for (size_t i=0; i<19; ++i) {
+         clusters[i]++;
+     }
+
+     cluster<19,3> p = { { clusters[0], clusters[1], clusters[2], clusters[3], clusters[4], clusters[5], clusters[6], clusters[7], clusters[8], clusters[9],
+                           clusters[10],clusters[11],clusters[12],clusters[13],clusters[14],clusters[15],clusters[16],clusters[17],clusters[18]
+                         },
+                         {centers[0], centers[1], centers[2]},
+                         {withins[0], withins[1], withins[2]},
+                         {sizes[0],   sizes[1],   sizes[2]  }
+                       };
+
+     cluster<19,3> q = { {3,3,3,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1}, {0.01702193495, 0.15342151455, 0.32441508262},{0.006126754998,0.004977009034,0.004883305120},{13,3,3}};
+
+     compare(p,q);
+}
 
 template <int N, int K> void compare(cluster<N,K>& p, cluster<N,K>& q) {
      if (p.clusters != q.clusters) {
-        std::cout << " returned invalid clusters" << std::endl;
-        std::cout << "   expected: [ ";
+        std::cout << "     returned invalid clusters" << std::endl;
+        std::cout << "        expected: [ ";
         std::copy(std::begin(q.clusters), std::end(q.clusters), std::ostream_iterator<int>(std::cout, " "));
         std::cout << "]" << std::endl;
-        std::cout << "   got:      [ ";
+        std::cout << "        got:      [ ";
         std::copy(std::begin(p.clusters), std::end(p.clusters), std::ostream_iterator<int>(std::cout, " "));
         std::cout << "]" << std::endl;
      }
@@ -450,11 +495,11 @@ template <int N, int K> void compare(cluster<N,K>& p, cluster<N,K>& q) {
             double d = abs(p.centers[i] - q.centers[i]);
 
             if (d > 0.00001) {
-               std::cout << " returned invalid centers" << std::endl;
-               std::cout << "   expected: [ ";
+               std::cout << "     returned invalid centers" << std::endl;
+               std::cout << "        expected: [ ";
                std::copy(std::begin(q.centers), std::end(q.centers), std::ostream_iterator<double>(std::cout, " "));
                std::cout << "]" << std::endl;
-               std::cout << "   got:      [ ";
+               std::cout << "        got:      [ ";
                std::copy(std::begin(p.centers), std::end(p.centers), std::ostream_iterator<double>(std::cout, " "));
                std::cout << "]" << std::endl;
                break;
@@ -467,11 +512,11 @@ template <int N, int K> void compare(cluster<N,K>& p, cluster<N,K>& q) {
             double d = abs(p.withins[i] - q.withins[i]);
 
             if (d > 0.00001) {
-               std::cout << " returned invalid withins" << std::endl;
-               std::cout << "   expected: [ ";
+               std::cout << "     returned invalid withins" << std::endl;
+               std::cout << "       expected: [ ";
                std::copy(std::begin(q.withins), std::end(q.withins), std::ostream_iterator<double>(std::cout, " "));
                std::cout << "]" << std::endl;
-               std::cout << "   got:      [ ";
+               std::cout << "       got:      [ ";
                std::copy(std::begin(p.withins), std::end(p.withins), std::ostream_iterator<double>(std::cout, " "));
                std::cout << "]" << std::endl;
                break;
@@ -480,11 +525,11 @@ template <int N, int K> void compare(cluster<N,K>& p, cluster<N,K>& q) {
      }
 
      if (p.size != q.size) {
-        std::cout << " returned invalid size" << std::endl;
-        std::cout << "   expected: [ ";
+        std::cout << "     returned invalid size" << std::endl;
+        std::cout << "       expected: [ ";
         std::copy(std::begin(q.size), std::end(q.size), std::ostream_iterator<double>(std::cout, " "));
         std::cout << "]" << std::endl;
-        std::cout << "   got:      [ ";
+        std::cout << "       got:      [ ";
         std::copy(std::begin(p.size), std::end(p.size), std::ostream_iterator<double>(std::cout, " "));
         std::cout << "]" << std::endl;
      }
