@@ -1,6 +1,7 @@
 #include <iostream>
 #include <array>
 #include <random>
+#include <cmath>
 
 #include "Ckmeans.1d.dp.h"
 
@@ -24,7 +25,7 @@ void testN10K3(const std::string&);
 void testN14K8(const std::string&);
 void testEstimateKExampleSet1(const std::string& method);
 void testEstimateKExampleSet2(const std::string& method);
-
+void testEstimateKExampleSet3(const std::string& method);
 
 // MAIN
 int main(int argc,char *argv[]) {
@@ -44,9 +45,10 @@ int main(int argc,char *argv[]) {
     //     testN14K8(method);
     //     testEstimateKExampleSet1(method);
     //     testEstimateKExampleSet2(method);
+    //     testEstimateKExampleSet3(method);
     }
     
-    testEstimateKExampleSet2("linear");
+    testEstimateKExampleSet3("linear");
 
     return 0;
 }
@@ -383,7 +385,7 @@ void testEstimateKExampleSet2(const std::string& method) {
      cluster<10,3> p = { {clusters[0],clusters[1],clusters[2],clusters[3],clusters[4],clusters[5],clusters[6],clusters[7],clusters[8],clusters[9]},
                          {centers[0], centers[1], centers[2]},
                          {withins[0], withins[1], withins[2]},
-                         {sizes[0],   sizes[1],  sizes[2] }
+                         {sizes[0],   sizes[1],   sizes[2]  }
                        };
 
      cluster<10,3> q = {{3, 3, 3, 3, 1, 1, 1, 2, 2, 2},{0.933333333333, 2.066666666667, 3.475},{0.0466666666667, 0.0466666666667, 0.2075},{3, 3, 4}};
@@ -391,7 +393,45 @@ void testEstimateKExampleSet2(const std::string& method) {
      compare(p,q);
      
 }
-// test_that("Estimating k example set 3 cosine", {
+// test_that("Estimating k example set 3 cosine"...
+//
+// NOTE: kmeans_1d_dp with range of K somehow seems to corrupt struct cluster arrays (no idea why - code below works fine though)
+void testEstimateKExampleSet3(const std::string& method) {
+     std::cout << "   test estimate K, example set 3 (cosine)" << std::endl;
+
+     double data[] = { -0.8390715,-0.9111303,-0.1455000,0.7539023,0.9601703,0.2836622,
+                       -0.6536436,-0.9899925,-0.4161468,0.5403023,1.0000000,0.5403023,
+                       -0.4161468,-0.9899925,-0.6536436,0.2836622,0.9601703,0.7539023,
+                       -0.1455000,-0.9111303,-0.8390715};
+
+     int    clusters[21];
+     double centers[21];
+     double withins[21];
+     double sizes[21];
+     double BIC;
+
+     kmeans_1d_dp(data, 21, NULL, 1, 21,
+                  clusters, centers, withins, sizes, &BIC,
+                  "BIC", method, L2);
+ 
+     // rebase cluster indices to match 'R'
+     for (size_t i=0; i<21; ++i) {
+         clusters[i]++;
+     }
+
+     cluster<21,2> p = { { clusters[0], clusters[1], clusters[2], clusters[3], clusters[4], clusters[5], clusters[6], clusters[7], clusters[8], clusters[9],
+                           clusters[10],clusters[11],clusters[12],clusters[13],clusters[14],clusters[15],clusters[16],clusters[17],clusters[18],clusters[19],
+                           clusters[20]},
+                         {centers[0], centers[1]},
+                         {withins[0], withins[1]},
+                         {sizes[0],   sizes[1]  }
+                       };
+
+     cluster<21,2> q = { {1,1,1,2,2,2,1,1,1,2,2,2,1,1,1,2,2,2,1,1,1}, {-0.6592474631, 0.6751193405},{1.0564793100, 0.6232976959},{12,9}};
+
+     compare(p,q);
+     
+}
 // test_that("Estimating k example set 4 gamma", {
 
 template <int N, int K> void compare(cluster<N,K>& p, cluster<N,K>& q) {
