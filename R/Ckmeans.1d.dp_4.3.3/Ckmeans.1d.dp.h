@@ -18,22 +18,22 @@ void backtrack(const std::vector<double> & x,
                double *withinss,
                double *count);
 
-// void backtrack_L1(
-//     const std::vector<double> & x,
-//     const std::vector< std::vector< size_t > > & J,
-//     int* cluster, double* centers, double* withinss,
-//     double* count /*int* count*/);
-// 
-// void backtrack(
-//     const std::vector<double> & x,
-//     const std::vector< std::vector< size_t > > & J,
-//     std::vector<size_t> & count);
-// 
-// void backtrack_L2Y(
-//     const std::vector<double> & x, const std::vector<double> & y,
-//     const std::vector< std::vector< size_t > > & J,
-//     int* cluster, double* centers, double* withinss,
-//     double* count /*int* count*/);
+void backtrack_L1(
+     const std::vector<double> & x,
+     const std::vector< std::vector< size_t > > & J,
+     int* cluster, double* centers, double* withinss,
+     double* count /*int* count*/);
+ 
+void backtrack(
+     const std::vector<double> & x,
+     const std::vector< std::vector< size_t > > & J,
+     std::vector<size_t> & count);
+ 
+void backtrack_L2Y(
+     const std::vector<double> & x, const std::vector<double> & y,
+     const std::vector< std::vector< size_t > > & J,
+     int* cluster, double* centers, double* withinss,
+     double* count /*int* count*/);
 
 void fill_row_q_SMAWK(int imin, int imax, int q,
                       std::vector< std::vector<ldouble> > & S,

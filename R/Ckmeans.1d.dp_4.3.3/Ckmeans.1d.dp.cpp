@@ -163,15 +163,13 @@ void kmeans_1d_dp(const double *x, const size_t N, const double *y, size_t Kmin,
 
      // Backtrack to find the clusters beginning and ending indices
      if(is_equally_weighted && criterion == L1) {
-        assert(false); 
-//         backtrack_L1(x_sorted, J, &cluster_sorted[0], centers, withinss, size);
+         backtrack_L1(x_sorted, J, &cluster_sorted[0], centers, withinss, size);
      } else if (is_equally_weighted && criterion == L2) {
          backtrack(x_sorted, J, &cluster_sorted[0], centers, withinss, size);
      } else if(criterion == L2Y) {
-        assert(false);
-//       backtrack_L2Y(x_sorted, y_sorted, J, &cluster_sorted[0],
-//                     centers, withinss, size);
-// 
+       backtrack_L2Y(x_sorted, y_sorted, J, &cluster_sorted[0],
+                     centers, withinss, size);
+ 
      } else {
        backtrack_weighted(x_sorted, y_sorted, J, &cluster_sorted[0], centers, withinss, size);
      }
