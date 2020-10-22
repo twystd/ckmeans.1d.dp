@@ -5,6 +5,7 @@
 // #include <cmath>
 #include <iostream>
 #include <string>
+#include <iomanip>
 // #include <vector>
 // #include <cstring>
 
@@ -125,6 +126,25 @@ void kmeans_1d_dp(const double *x, const size_t N, const double *y, size_t Kmin,
         } else {
            fill_dp_matrix(x_sorted, y_sorted, S, J, method, criterion);
         }
+
+        std::cout << "S: ";
+        for (int i=0; i<Kmax; i++) {
+            for (int j=0; j<N; j++) {
+                std::cout << std::setprecision(3) << std::setfill(' ') << std::setw(5) << S[i][j] << ",";
+            }
+            std::cout << std::endl << "   ";
+        }
+        std::cout << std::endl;
+
+        std::cout << "J: ";
+        for (int i=0; i<Kmax; i++) {
+            for (int j=0; j<N; j++) {
+                std::cout << std::setfill(' ') << std::setw(5) << J[i][j] << ",";
+            }
+            std::cout << std::endl << "   ";
+        }
+        std::cout << std::endl;
+
 
        // Choose an optimal number of levels between Kmin and Kmax
        if (estimate_k == "BIC") {

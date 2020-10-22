@@ -28,6 +28,6 @@ coverage: build
 	go test -cover ./...
 
 debug: build
-	go test ./... -run TestCKMeans
+	go test ./... -run TestCKMeansK2
 
 

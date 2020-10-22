@@ -39,25 +39,27 @@ void testTaps();
 int main(int argc,char *argv[]) {
     std::cout << "ckmeans v4.3.3" << std::endl;
 
-    std::string methods[] = { "linear", "loglinear", "quadratic" };
-
-    for (const std::string &method: methods) {
-         std::cout << std::endl << method << std::endl;
-     
-         testWeightedInput(method);
-         testGivenK(method);
-         testNlteK(method);
-         testKeq2(method);
-         testKeq1(method);
-         testN10K3(method);
-         testN14K8(method);
-         testEstimateKExampleSet1(method);
-         testEstimateKExampleSet2(method);
-         testEstimateKExampleSet3(method);
-         testEstimateKExampleSet4(method);
-    }
+//    std::string methods[] = { "linear", "loglinear", "quadratic" };
+//
+//    for (const std::string &method: methods) {
+//         std::cout << std::endl << method << std::endl;
+//     
+//         testWeightedInput(method);
+//         testGivenK(method);
+//         testNlteK(method);
+//         testKeq2(method);
+//         testKeq1(method);
+//         testN10K3(method);
+//         testN14K8(method);
+//         testEstimateKExampleSet1(method);
+//         testEstimateKExampleSet2(method);
+//         testEstimateKExampleSet3(method);
+//         testEstimateKExampleSet4(method);
+//
+//         testTaps();
+//    }
     
-    testTaps();
+    testKeq2("linear");
 
     return 0;
 }
