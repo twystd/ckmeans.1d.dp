@@ -2,7 +2,7 @@ package ckmeans
 
 import ()
 
-func CKMeans(data, weights []float64) ([]int, error) {
+func CKMeans(data, weights []float64, k int) (int, []int, error) {
 	// single unique element
 	N := len(data)
 	clusters := make([]int, N)
@@ -11,7 +11,7 @@ func CKMeans(data, weights []float64) ([]int, error) {
 		clusters[i] = 1
 	}
 
-	return clusters, nil
+	return 1, clusters, nil
 }
 
 // type Cluster struct {
