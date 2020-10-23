@@ -79,7 +79,7 @@ func ckmeans(data, weights []float64, kmin, kmax int) (int, []int, error) {
 	fmt.Printf("S: %v\n", S)
 	fmt.Printf("J: %v\n", S)
 
-	EWL2.DP(x, w, S, J)
+	EWL2.FillDP(x, w, S, J)
 	// EWL2::fill_dp_matrix(x_sorted, y_sorted, S, J, method);
 	//
 	// S: 0, 0.5, 2, 5, 10, 17.5, 28, 42, 60, 82.5,
