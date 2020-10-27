@@ -179,11 +179,13 @@ size_t select_levels(const std::vector<double> & x,
       loglikelihood += std::log(L);
     }
 
+      std::cout << ">> LOGLIKELIHOOD: " << loglikelihood << std::endl;
     double & bic = BIC[K-Kmin];
 
     // Compute the Bayesian information criterion
     bic = 2 * loglikelihood - (3 * K - 1) * std::log((double)N);  //(K*3-1)
 
+      std::cout << ">> BIC: " << bic << std::endl;
     // std::cout << "k=" << K << ": Loglh=" << loglikelihood << ", BIC=" << BIC << std::endl;
 
     if (K == Kmin) {

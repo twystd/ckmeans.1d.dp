@@ -14,6 +14,9 @@ all: ckmeans
 ckmeans: $(obj)
 	$(CC) $(CXXFLAGS) -o $@ $^ 
 
+test: ckmeans
+	./ckmeans
+
 run: ckmeans
 	./ckmeans
 

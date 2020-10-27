@@ -78,7 +78,6 @@ func ckmeans(data, weights []float64, kmin, kmax int) (int, []int, error) {
 
 	EWL2.FillDPMatrix(x, w, S, J)
 
-	//Kopt := select_levels(x, J, Kmin, Kmax, BIC)
 	kopt := selectLevelsBIC(x, J, kmin, kmax)
 
 	fmt.Printf("KOPT: %v\n", kopt)
