@@ -7,7 +7,29 @@ import (
 	"github.com/twystd/ckmeans.1d.dp/go/ckmeans/EWL2"
 )
 
-func CKMeans(data, weights []float64, kmin, kmax int) (int, []int, error) {
+type CKMEANS struct {
+	Method    Method
+	EstimateK EstimateK
+	Criterion Criterion
+}
+
+type Method int
+type Criterion int
+type EstimateK int
+
+const (
+	Linear Method = iota + 1
+)
+
+const (
+	L2 Criterion = iota + 1
+)
+
+const (
+	BIC EstimateK = iota + 1
+)
+
+func (ck *CKMEANS) CKMeans(data, weights []float64, kmin, kmax int) (int, []int, error) {
 	// TODO data nil/empty
 	// TODO len(weights) != len(data)
 	// TODO kmin > kmax
@@ -47,11 +69,25 @@ func CKMeans(data, weights []float64, kmin, kmax int) (int, []int, error) {
 
 	// K > 1
 
-	return ckmeans(data, weights, kmin, kmax)
+	return ck.ckmeans(data, weights, kmin, kmax)
 }
 
-// FIXME: assumes equally weighted, L2, BIC
-func ckmeans(data, weights []float64, kmin, kmax int) (int, []int, error) {
+func (ck *CKMEANS) ckmeans(data, weights []float64, kmin, kmax int) (int, []int, error) {
+	// ... validate
+
+	if ck.Method != Linear {
+		panic("Only implements 'linear' method")
+	}
+
+	if ck.EstimateK != BIC {
+		panic("Only implements BIC estimate-k")
+	}
+
+	if ck.Criterion != L2 {
+		panic("Only implements L2 criterion")
+	}
+
+	// FIXME: assumes equally weighted, L2, BIC
 	var clusters []int
 	var k int
 

@@ -7,6 +7,12 @@ import (
 	"time"
 )
 
+var ck = CKMEANS{
+	Method:    Linear,
+	EstimateK: BIC,
+	Criterion: L2,
+}
+
 // 'R':
 // library(Ckmeans.1d.dp)
 //
@@ -22,7 +28,7 @@ func TestCKMeansWithSingleUniqueValue(t *testing.T) {
 	x := []float64{-2.5, -2.5, -2.5, -2.5}
 	expected := []int{1, 1, 1, 1}
 
-	k, clusters, err := CKMeans(x, nil, 1, 4)
+	k, clusters, err := ck.CKMeans(x, nil, 1, 4)
 	if err != nil {
 		t.Fatalf("Unexpected error (%v)", err)
 	}
@@ -50,7 +56,7 @@ func TestCKMeansK1(t *testing.T) {
 		expected[i] = 1
 	}
 
-	k, clusters, err := CKMeans(x, nil, 1, 1)
+	k, clusters, err := ck.CKMeans(x, nil, 1, 1)
 	if err != nil {
 		t.Fatalf("Unexpected error (%v)", err)
 	}
@@ -70,7 +76,7 @@ func TestCKMeansWeightedK1(t *testing.T) {
 	w := []float64{1.2, 1.1, 0.9, 0.8}
 	expected := []int{1, 1, 1, 1}
 
-	k, clusters, err := CKMeans(x, w, 1, 1)
+	k, clusters, err := ck.CKMeans(x, w, 1, 1)
 	if err != nil {
 		t.Fatalf("Unexpected error (%v)", err)
 	}
@@ -89,7 +95,7 @@ func TestCKMeansK2(t *testing.T) {
 	x := []float64{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 	expected := []int{1, 1, 1, 1, 1, 2, 2, 2, 2, 2}
 
-	k, clusters, err := CKMeans(x, nil, 2, 2)
+	k, clusters, err := ck.CKMeans(x, nil, 2, 2)
 	if err != nil {
 		t.Fatalf("Unexpected error (%v)", err)
 	}
