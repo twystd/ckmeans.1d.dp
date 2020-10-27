@@ -159,6 +159,7 @@ void backtrack(const std::vector<double> & x,
                int* cluster, double* centers, double* withinss,
                double* count /*int* count*/)
 {
+
   const size_t K = J.size();
   const size_t N = J[0].size();
   size_t cluster_right = N-1;
@@ -262,7 +263,7 @@ void backtrack_L2Y(const std::vector<double> & x, const std::vector<double> & y,
 void backtrack(const std::vector<double> & x,
                const std::vector< std::vector< size_t > > & J,
                std::vector<size_t> & count, const int K)
-{
+{ std::cout << "backtrack/4" << std::endl;
   // const int K = (int) J.size();
   const size_t N = J[0].size();
   size_t cluster_right = N-1;

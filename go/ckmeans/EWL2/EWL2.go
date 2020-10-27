@@ -7,7 +7,7 @@ package EWL2
    last point in cluster q
    J: K x N backtrack matrix
 */
-func FillDP(x, w []float64, S [][]float64, J [][]int) {
+func FillDPMatrix(x, w []float64, S [][]float64, J [][]int) {
 	K := len(S)
 	N := len(S[0])
 

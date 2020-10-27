@@ -76,17 +76,12 @@ func ckmeans(data, weights []float64, kmin, kmax int) (int, []int, error) {
 		J[i] = make([]int, N)
 	}
 
-	fmt.Printf("S: %v\n", S)
-	fmt.Printf("J: %v\n", S)
+	EWL2.FillDPMatrix(x, w, S, J)
 
-	EWL2.FillDP(x, w, S, J)
-	// EWL2::fill_dp_matrix(x_sorted, y_sorted, S, J, method);
-	//
-	// S: 0, 0.5, 2, 5, 10, 17.5, 28, 42, 60, 82.5,
-	//    0,   0, 0, 0,  0,    0,  0,  0,  0, 20.0,
-	//
-	// J: 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	//    0, 0, 0, 0, 0, 0, 0, 0, 0, 5,
+	//Kopt := select_levels(x, J, Kmin, Kmax, BIC)
+	kopt := selectLevelsBIC(x, J, kmin, kmax)
+
+	fmt.Printf("KOPT: %v\n", kopt)
 
 	return k, clusters, nil
 }
