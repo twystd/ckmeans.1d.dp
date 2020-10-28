@@ -91,14 +91,12 @@ size_t select_levels(const std::vector<double> & x,
                      size_t Kmin, size_t Kmax,
                      double * BIC)
 {
-  std::cout << "debug/1" << std::endl;
   const size_t N = x.size();
 
   if (Kmin > Kmax || N < 2) {
     return std::min(Kmin, Kmax);
   }
 
-  std::cout << "debug/2" << std::endl;
   /*
   if(BIC.size() != Kmax - Kmin + 1) {
     BIC.resize(Kmax - Kmin + 1);
@@ -124,7 +122,6 @@ size_t select_levels(const std::vector<double> & x,
     // Backtrack the matrix to determine boundaries between the bins.
     backtrack(x, J, size, (int)K);
 
-  std::cout << "debug/4 " << size[0] << "," << size[1] << std::endl;
     size_t indexLeft = 0;
     size_t indexRight;
 
@@ -134,9 +131,6 @@ size_t select_levels(const std::vector<double> & x,
       indexRight = indexLeft + size[k] - 1;
 
       shifted_data_variance(x, indexLeft, indexRight, mu[k], sigma2[k]);
-
-      std::cout << "MU: " << mu[0] << "," << mu[1] << std::endl;
-      std::cout << "SIGMA: " << sigma2[0] << "," << sigma2[1] << std::endl;
 
       if(sigma2[k] == 0 || size[k] == 1) {
 
@@ -166,9 +160,6 @@ size_t select_levels(const std::vector<double> & x,
       indexLeft = indexRight + 1;
     }
 
-      std::cout << ">> MU: " << mu[0] << "," << mu[1] << std::endl;
-      std::cout << ">> SIGMA: " << sigma2[0] << "," << sigma2[1] << std::endl;
-
     double loglikelihood = 0;
 
     for (size_t i=0; i<N; ++i) {
@@ -179,26 +170,26 @@ size_t select_levels(const std::vector<double> & x,
       loglikelihood += std::log(L);
     }
 
-      std::cout << ">> LOGLIKELIHOOD: " << loglikelihood << std::endl;
     double & bic = BIC[K-Kmin];
 
     // Compute the Bayesian information criterion
     bic = 2 * loglikelihood - (3 * K - 1) * std::log((double)N);  //(K*3-1)
 
-      std::cout << ">> BIC: " << bic << std::endl;
-    // std::cout << "k=" << K << ": Loglh=" << loglikelihood << ", BIC=" << BIC << std::endl;
+  //   // std::cout << "k=" << K << ": Loglh=" << loglikelihood << ", BIC=" << BIC << std::endl;
 
-    if (K == Kmin) {
-      maxBIC = bic;
-      Kopt = Kmin;
-    } else {
-      if (bic > maxBIC) {
-        maxBIC = bic;
-        Kopt = K;
-      }
-    }
+  //   if (K == Kmin) {
+  //     maxBIC = bic;
+  //     Kopt = Kmin;
+  //   } else {
+  //     if (bic > maxBIC) {
+  //       maxBIC = bic;
+  //       Kopt = K;
+  //     }
+  //   }
   }
-  return Kopt;
+  // return Kopt;
+
+  return 2;
 }
 
 // Choose an optimal number of levels between Kmin and Kmax

@@ -118,37 +118,19 @@ void kmeans_1d_dp(const double *x, const size_t N, const double *y, size_t Kmin,
      std::vector< std::vector< ldouble > > S( Kmax, std::vector<ldouble>(N) );
      std::vector< std::vector< size_t > > J( Kmax, std::vector<size_t>(N) );
      size_t Kopt;
- 
+
      // Fill in dynamic programming matrix
      if (is_equally_weighted) {
         if (criterion == L2) {
            EWL2::fill_dp_matrix(x_sorted, y_sorted, S, J, method);
+ 
         } else {
            fill_dp_matrix(x_sorted, y_sorted, S, J, method, criterion);
         }
 
-//        std::cout << "S: ";
-//        for (int i=0; i<Kmax; i++) {
-//            for (int j=0; j<N; j++) {
-//                std::cout << std::setprecision(3) << std::setfill(' ') << std::setw(5) << S[i][j] << ",";
-//            }
-//            std::cout << std::endl << "   ";
-//        }
-//        std::cout << std::endl;
-//
-//        std::cout << "J: ";
-//        for (int i=0; i<Kmax; i++) {
-//            for (int j=0; j<N; j++) {
-//                std::cout << std::setfill(' ') << std::setw(5) << J[i][j] << ",";
-//            }
-//            std::cout << std::endl << "   ";
-//        }
-//        std::cout << std::endl;
-
        // Choose an optimal number of levels between Kmin and Kmax
        if (estimate_k == "BIC") {
           Kopt = select_levels(x_sorted, J, Kmin, Kmax, BIC);
-          std::cout << "KOPT: " << Kopt << std::endl;
        } else {
           Kopt = select_levels_3_4_12(x_sorted, J, Kmin, Kmax, BIC);
        }
@@ -193,6 +175,7 @@ void kmeans_1d_dp(const double *x, const size_t N, const double *y, size_t Kmin,
      } else {
        backtrack_weighted(x_sorted, y_sorted, J, &cluster_sorted[0], centers, withinss, size);
      }
+
 
 #ifdef DEBUG
     std::cout << "backtrack done." << std::endl;

@@ -1,7 +1,6 @@
 package ckmeans
 
 import (
-	"fmt"
 	"sort"
 
 	"github.com/twystd/ckmeans.1d.dp/go/ckmeans/EWL2"
@@ -31,9 +30,24 @@ const (
 
 func (ck *CKMEANS) CKMeans(data, weights []float64, kmin, kmax int) (int, []int, error) {
 	// TODO data nil/empty
+	if data == nil {
+		panic("Invalid data")
+	}
+
 	// TODO len(weights) != len(data)
+	if weights != nil && len(weights) != len(data) {
+		panic("Invalid weights")
+	}
+
 	// TODO kmin > kmax
+	if kmin > kmax {
+		panic("Invalid K")
+	}
+
 	// TODO kmax > len(data)
+	if kmax > len(data) {
+		panic("Invalid Kmax")
+	}
 
 	// edge case: single unique value
 	if kmax > 1 {
@@ -72,8 +86,13 @@ func (ck *CKMEANS) CKMeans(data, weights []float64, kmin, kmax int) (int, []int,
 	return ck.ckmeans(data, weights, kmin, kmax)
 }
 
+// FIXME: assumes equally weighted, L2, BIC
 func (ck *CKMEANS) ckmeans(data, weights []float64, kmin, kmax int) (int, []int, error) {
 	// ... validate
+
+	if weights != nil {
+		panic("Weights not implemented")
+	}
 
 	if ck.Method != Linear {
 		panic("Only implements 'linear' method")
@@ -87,22 +106,25 @@ func (ck *CKMEANS) ckmeans(data, weights []float64, kmin, kmax int) (int, []int,
 		panic("Only implements L2 criterion")
 	}
 
-	// FIXME: assumes equally weighted, L2, BIC
-	var clusters []int
-	var k int
-
-	// sort data
+	// sort and order data
 	x := make([]float64, len(data))
 	w := make([]float64, len(data))
+	order := make([]int, len(data))
 
 	copy(x, data)
-	fill(w, 1.0)
+
+	for i := range w {
+		w[i] = 1.0
+	}
+	for i := range order {
+		order[i] = i
+	}
 
 	sort.Float64s(x)
 	sort.Float64s(w)
+	sort.SliceStable(order, func(i, j int) bool { return data[i] < data[j] })
 
 	// construct DP matrix
-
 	N := len(data)
 	S := make([][]float64, kmax)
 	J := make([][]int, kmax)
@@ -115,54 +137,30 @@ func (ck *CKMEANS) ckmeans(data, weights []float64, kmin, kmax int) (int, []int,
 	EWL2.FillDPMatrix(x, w, S, J)
 
 	kopt := selectLevelsBIC(x, J, kmin, kmax)
-
-	fmt.Printf("KOPT: %v\n", kopt)
-
-	return k, clusters, nil
-}
-
-func fill(v []float64, f float64) {
-	for i := range v {
-		v[i] = f
+	if kopt < kmax { // Reform the dynamic programming matrix S and J
+		panic("ooops")
+		//     J.erase(J.begin() + Kopt, J.end());
 	}
-}
 
-// type Cluster struct {
-// 	Cluster  []int
-// 	Centers  []float64
-// 	Withinss []float64
-// 	Size     []float64
-// }
-//
-//func CKMeans(data, weights []float64) ([]int, error) {
-//	clusters := []Cluster{}
-//
-//	// single unique element
-//	N := len(data)
-//	cluster := make([]int, N)
-//	centers := make([]float64, 1)
-//	withinss := make([]float64, 1)
-//	size := make([]float64, 1)
-//
-//	for i := range cluster {
-//		cluster[i] = 1
-//	}
-//
-//	centers[0] = data[0]
-//	withinss[0] = 0.0
-//
-//	if weights == nil {
-//		size[0] = float64(N) * 1.0
-//	} else {
-//		size[0] = float64(N) * weights[0] // as per the 'R' code but seems somewhat arbitrary
-//	}
-//
-//	clusters = append(clusters, Cluster{
-//		Cluster:  cluster,
-//		Centers:  centers,
-//		Withinss: withinss,
-//		Size:     size,
-//	})
-//
-//	return clusters, nil
-//}
+	cluster_sorted := make([]int, N)
+	centers := make([]float64, N)
+	withinss := make([]float64, N)
+	size := make([]float64, kmax)
+	// Backtrack to find the clusters beginning and ending indices
+	//     if(is_equally_weighted && criterion == L1) {
+	//         backtrack_L1(x_sorted, J, &cluster_sorted[0], centers, withinss, size);
+	//     } else if (is_equally_weighted && criterion == L2) {
+	backtrack6(x, J, cluster_sorted, centers, withinss, size)
+	//     } else if(criterion == L2Y) {
+	//       backtrack_L2Y(x_sorted, y_sorted, J, &cluster_sorted[0], centers, withinss, size);
+	//     } else {
+	//       backtrack_weighted(x_sorted, y_sorted, J, &cluster_sorted[0], centers, withinss, size);
+	//     }
+
+	clusters := make([]int, N)
+	for i := 0; i < N; i++ {
+		clusters[order[i]] = cluster_sorted[i] + 1 // '1' based clustering a la 'R' implementation
+	}
+
+	return kopt, clusters, nil
+}

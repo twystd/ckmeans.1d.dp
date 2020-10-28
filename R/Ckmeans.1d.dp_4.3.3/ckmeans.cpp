@@ -10,10 +10,10 @@
 
 template <int N, int K> struct cluster {
    std::array<int,N>    clusters;
-   std::array<double,K> centers;
-   std::array<double,K> withins;
+   std::array<double,N> centers;
+   std::array<double,N> withins;
    std::array<double,K> size;
-   std::array<double,N> BIC; // TODO check - fixes the segfault but should probably be kMax
+   std::array<double,K> BIC; // TODO check - fixes the segfault but should probably be kMax
 };
 
 // FORWARD DECLARATIONS

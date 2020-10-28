@@ -24,7 +24,7 @@ func selectLevelsBIC(x []float64, J [][]int, kmin, kmax int) int {
 
 	for K := kmin; K <= kmax; K++ {
 		// Backtrack the matrix to determine boundaries between the bins
-		size := backtrack(x, J, K)
+		size := backtrack3(x, J, K)
 
 		indexLeft := 0
 		var indexRight int
