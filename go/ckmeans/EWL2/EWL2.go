@@ -97,25 +97,79 @@ func smawk(imin, imax, istep, q int, js []int, S [][]float64, J [][]int, sum_x, 
 		// base case only one element left
 		find_min_from_candidates(imin, imax, istep, q, js, S, J, sum_x, sum_x_sq)
 	} else {
-		panic("NOT IMPLEMENTED")
-		//    // REDUCE
-		//
-		//    std::vector<size_t> js_odd;
-		//
-		//    reduce_in_place(imin, imax, istep, q, js, js_odd,
-		//                    S, J, sum_x, sum_x_sq);
-		//
-		//    int istepx2 = (istep << 1);
-		//    int imin_odd = (imin + istep);
-		//    int imax_odd = (imin_odd + (imax - imin_odd) / istepx2 * istepx2);
-		//
-		//    // Recursion on odd rows (0-based):
-		//    SMAWK(imin_odd, imax_odd, istepx2,
-		//          q, js_odd, S, J, sum_x, sum_x_sq);
-		//
-		//    fill_even_positions(imin, imax, istep, q, js,
-		//                        S, J, sum_x, sum_x_sq);
+		// REDUCE
+
+		js_odd := make([]int, len(js))
+
+		reduce_in_place(imin, imax, istep, q, js, js_odd, S, J, sum_x, sum_x_sq)
+
+		istepx2 := istep << 1
+		imin_odd := imin + istep
+		imax_odd := imin_odd + (imax-imin_odd)/istepx2*istepx2
+
+		// Recursion on odd rows (0-based):
+		smawk(imin_odd, imax_odd, istepx2, q, js_odd, S, J, sum_x, sum_x_sq)
+
+		fill_even_positions(imin, imax, istep, q, js, S, J, sum_x, sum_x_sq)
 	}
+}
+
+func fill_even_positions(imin, imax, istep, q int, js []int, S [][]float64, J [][]int, sum_x, sum_x_sq []float64) {
+	panic("NOT IMPLEMENTED")
+	// #   // Derive j for even rows (0-based)
+	// #   size_t n = (js.size());
+	// #   int istepx2 = (istep << 1);
+	// #   size_t jl = (js[0]);
+	// #   for(int i=(imin), r(0); i<=imax; i+=istepx2) {
+	// #
+	// #     // auto jmin = (i == imin) ? js[0] : J[q][i - istep];
+	// #
+	// #     while(js[r] < jl) {
+	// #       // Increase r until it points to a value of at least jmin
+	// #       r ++;
+	// #     }
+	// #
+	// #     // Initialize S[q][i] and J[q][i]
+	// #     S[q][i] = S[q-1][js[r]-1] +
+	// #       dissimilarity(js[r], i, sum_x, sum_x_sq);
+	// #     // ssq(js[r], i, sum_x, sum_x_sq, sum_w);
+	// #     J[q][i] = js[r]; // rmin
+	// #
+	// #     // Look for minimum S upto jmax within js
+	// #     int jh = (int) ( (i + istep <= imax) ? J[q][i + istep] : js[n-1] );
+	// #
+	// #     int jmax = std::min((int)jh, (int)i);
+	// #
+	// #     ldouble sjimin(
+	// #         dissimilarity(jmax, i, sum_x, sum_x_sq)
+	// #       // ssq(jmax, i, sum_x, sum_x_sq, sum_w)
+	// #     );
+	// #
+	// #     for(++ r; r < n && js[r]<=jmax; r++) {
+	// #
+	// #       const size_t & jabs = js[r];
+	// #
+	// #       if(jabs > i) break;
+	// #
+	// #       if(jabs < J[q-1][i]) continue;
+	// #
+	// #       ldouble s =
+	// #         dissimilarity(jabs, i, sum_x, sum_x_sq);
+	// #       // (ssq(jabs, i, sum_x, sum_x_sq, sum_w));
+	// #       ldouble Sj = (S[q-1][jabs-1] + s);
+	// #
+	// #       if(Sj <= S[q][i]) {
+	// #         S[q][i] = Sj;
+	// #         J[q][i] = js[r];
+	// #       } else if(S[q-1][jabs-1] + sjimin > S[q][i]) {
+	// #         break;
+	// #       } /*else if(S[q-1][js[rmin]-1] + s > S[q][i]) {
+	// #  break;
+	// #       } */
+	// #     }
+	// #     r --;
+	// #     jl = jh;
+	// #   }
 }
 
 func find_min_from_candidates(imin, imax, istep, q int, js []int, S [][]float64, J [][]int, sum_x, sum_x_sq []float64) {
@@ -152,4 +206,62 @@ func find_min_from_candidates(imin, imax, istep, q int, js []int, S [][]float64,
 			}
 		}
 	}
+}
+
+func reduce_in_place(imin, imax, istep, q int, js, js_red []int, S [][]float64, J [][]int, sum_x, sum_x_sq []float64) {
+	N := (imax-imin)/istep + 1
+
+	copy(js_red, js)
+
+	if N >= len(js) {
+		return
+	}
+
+	// Two positions to move candidate j's back and forth
+	left := -1 // points to last favorable position / column
+	right := 0 // points to current position / column
+
+	m := len(js_red)
+
+	for m > N { // js_reduced has more than N positions / columns
+		p := left + 1
+		i := imin + p*istep
+		j := js_red[right]
+		Sl := S[q-1][j-1] + dissimilarity(j, i, sum_x, sum_x_sq)
+
+		// ssq(j, i, sum_x, sum_x_sq, sum_w));
+		jplus1 := js_red[right+1]
+		Slplus1 := S[q-1][jplus1-1] + dissimilarity(jplus1, i, sum_x, sum_x_sq)
+
+		println("??", m, Sl, Slplus1)
+
+		if Sl < Slplus1 && p < N-1 {
+			left++
+			js_red[left] = j // i += istep;
+			right++          // move on to next position / column p+1
+		} else if Sl < Slplus1 && p == N-1 {
+			right++
+			js_red[right] = j // delete position / column p+1
+			m--
+		} else { // (Sl >= Slplus1)
+			if p > 0 { // i > imin
+				// delete position / column p and move back to previous position / column p-1:
+				js_red[right] = js_red[left]
+				left--
+				// p --; // i -= istep;
+			} else {
+				right++ // delete position / column 0
+			}
+			m--
+		}
+	}
+
+	for r := left + 1; r < m; r++ {
+		js_red[r] = js_red[right]
+		right++
+	}
+
+	tmp := make([]int, m)
+	copy(tmp, js_red)
+	js_red = tmp
 }
