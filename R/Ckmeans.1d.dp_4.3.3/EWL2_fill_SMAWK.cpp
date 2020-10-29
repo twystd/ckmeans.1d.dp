@@ -38,12 +38,14 @@ void reduce_in_place(int imin, int imax, int istep, int q,
                      const std::vector< std::vector<size_t> > & J,
                      const std::vector<ldouble> & sum_x,
                      const std::vector<ldouble> & sum_x_sq)
-{
-  int N = (imax - imin) / istep + 1;
+{ int N = (imax - imin) / istep + 1;
 
   js_red = js;
 
+  std::cout << "reduce_in_place " << N << " len(js):" << js.size() << std::endl;
+
   if(N >= js.size()) {
+    std::cout << "skipping for now " << std::endl;
     return;
   }
 

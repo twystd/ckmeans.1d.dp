@@ -175,21 +175,19 @@ size_t select_levels(const std::vector<double> & x,
     // Compute the Bayesian information criterion
     bic = 2 * loglikelihood - (3 * K - 1) * std::log((double)N);  //(K*3-1)
 
-  //   // std::cout << "k=" << K << ": Loglh=" << loglikelihood << ", BIC=" << BIC << std::endl;
+    // std::cout << "k=" << K << ": Loglh=" << loglikelihood << ", BIC=" << BIC << std::endl;
 
-  //   if (K == Kmin) {
-  //     maxBIC = bic;
-  //     Kopt = Kmin;
-  //   } else {
-  //     if (bic > maxBIC) {
-  //       maxBIC = bic;
-  //       Kopt = K;
-  //     }
-  //   }
+    if (K == Kmin) {
+      maxBIC = bic;
+      Kopt = Kmin;
+    } else {
+      if (bic > maxBIC) {
+        maxBIC = bic;
+        Kopt = K;
+      }
+    }
   }
-  // return Kopt;
-
-  return 2;
+  return Kopt;
 }
 
 // Choose an optimal number of levels between Kmin and Kmax

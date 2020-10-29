@@ -167,7 +167,7 @@ void kmeans_1d_dp(const double *x, const size_t N, const double *y, size_t Kmin,
      if(is_equally_weighted && criterion == L1) {
          backtrack_L1(x_sorted, J, &cluster_sorted[0], centers, withinss, size);
      } else if (is_equally_weighted && criterion == L2) {
-         backtrack(x_sorted, J, &cluster_sorted[0], centers, withinss, size);
+        backtrack(x_sorted, J, &cluster_sorted[0], centers, withinss, size);
      } else if(criterion == L2Y) {
        backtrack_L2Y(x_sorted, y_sorted, J, &cluster_sorted[0],
                      centers, withinss, size);
@@ -176,10 +176,7 @@ void kmeans_1d_dp(const double *x, const size_t N, const double *y, size_t Kmin,
        backtrack_weighted(x_sorted, y_sorted, J, &cluster_sorted[0], centers, withinss, size);
      }
 
-
-#ifdef DEBUG
-    std::cout << "backtrack done." << std::endl;
-#endif
+     std::cout << "backtrack done." << std::endl;
 
      for (size_t i = 0; i < N; ++i) {
          // Obtain clustering on data in the original order

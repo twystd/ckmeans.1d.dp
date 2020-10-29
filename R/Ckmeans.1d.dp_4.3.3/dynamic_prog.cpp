@@ -159,9 +159,7 @@ void backtrack(const std::vector<double> & x,
                const std::vector< std::vector< size_t > > & J,
                int* cluster, double* centers, double* withinss,
                double* count /*int* count*/)
-{
-
-std::cout << "backtrack/6" << std::endl;
+{ std::cout << "backtrack/6" << std::endl;
 
   const size_t K = J.size();
   const size_t N = J[0].size();

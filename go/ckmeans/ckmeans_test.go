@@ -108,3 +108,22 @@ func TestCKMeansK2(t *testing.T) {
 		t.Errorf("Returned invalid clusters:\n   expected: %v\n   got:      %v\n", expected, clusters)
 	}
 }
+
+// result <- Ckmeans.1d.dp(c(3, 3, 3, 3, 1, 1, 1, 2, 2, 2), 3, method="linear")
+func TestCKMeansN10K3(t *testing.T) {
+	x := []float64{3, 3, 3, 3, 1, 1, 1, 2, 2, 2}
+	expected := []int{3, 3, 3, 3, 1, 1, 1, 2, 2, 2}
+
+	k, clusters, err := ck.CKMeans(x, nil, 3, 3)
+	if err != nil {
+		t.Fatalf("Unexpected error (%v)", err)
+	}
+
+	if k != 3 {
+		t.Errorf("Expected K=%v, got: %v\n", 3, k)
+	}
+
+	if !reflect.DeepEqual(clusters, expected) {
+		t.Errorf("Returned invalid clusters:\n   expected: %v\n   got:      %v\n", expected, clusters)
+	}
+}

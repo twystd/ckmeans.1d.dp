@@ -110,19 +110,31 @@ func (ck *CKMEANS) ckmeans(data, weights []float64, kmin, kmax int) (int, []int,
 	x := make([]float64, len(data))
 	w := make([]float64, len(data))
 	order := make([]int, len(data))
+	index := make([]struct {
+		i int
+		x float64
+	}, len(data))
+
+	for i := range index {
+		index[i] = struct {
+			i int
+			x float64
+		}{i, data[i]}
+	}
 
 	copy(x, data)
 
 	for i := range w {
 		w[i] = 1.0
 	}
-	for i := range order {
-		order[i] = i
-	}
 
 	sort.Float64s(x)
 	sort.Float64s(w)
-	sort.SliceStable(order, func(i, j int) bool { return data[i] < data[j] })
+	sort.SliceStable(index, func(i, j int) bool { return index[i].x < index[j].x })
+
+	for i := range order {
+		order[i] = index[i].i
+	}
 
 	// construct DP matrix
 	N := len(data)
