@@ -45,7 +45,7 @@ int main(int argc,char *argv[]) {
 //         std::cout << std::endl << method << std::endl;
 //     
 //         testWeightedInput(method);
-//         testGivenK(method);
+//         testGivenK(method);                  // Go'd
 //         testNlteK(method);                   // Go'd
 //         testKeq2(method);                    // Go'd
 //         testKeq1(method);                    // Go'd
@@ -59,7 +59,7 @@ int main(int argc,char *argv[]) {
 //         testTaps();
 //    }
     
-    testN14K8("linear");
+    testWeightedInput("linear");
 
     return 0;
 }
