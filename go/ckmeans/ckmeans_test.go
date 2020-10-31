@@ -147,22 +147,21 @@ func TestCKMeansN14K8(t *testing.T) {
 	}
 }
 
-//// test_that("n==14, k==8"...
-//void testN14K8(const std::string& method) {
-//     std::cout << "   test with n=14, k=8" << std::endl;
-//
-//     double        data[] = {-3, 2.2, -6, 7, 9, 11, -6.3, 75, 82.6, 32.3, -9.5, 62.5, 7, 95.2};
-//     cluster<14,8> p = {{},{},{},{}};
-//     cluster<14,8> q = {{2, 2, 1, 3, 3, 3, 1, 6, 7, 4, 1, 5, 3, 8},
-//                        {-7.266666667, -0.4, 8.5, 32.3, 62.5, 75.0, 82.6, 95.2},
-//                        {7.526666667, 13.52, 11.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-//                        {3, 2, 4, 1, 1, 1, 1, 1}};
-//
-//     kmeans_1d_dp(data, 14, NULL, 8, 8,
-//                  p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), p.BIC.data(),
-//                  "BIC", method, L2);
-//
-//     rebase(p);
-//     compare(p,q);
-//}
-//
+// result <- Ckmeans.1d.dp(c(3,2,-5.4,0.1),4,method="linear")
+func TestCKNlteK(t *testing.T) {
+	x := []float64{3, 2, -5.4, 0.1}
+	expected := []int{4, 3, 1, 2}
+
+	k, clusters, err := ck.CKMeans(x, nil, 4, 4)
+	if err != nil {
+		t.Fatalf("Unexpected error (%v)", err)
+	}
+
+	if k != 4 {
+		t.Errorf("Expected K=%v, got: %v\n", 4, k)
+	}
+
+	if !reflect.DeepEqual(clusters, expected) {
+		t.Errorf("Returned invalid clusters:\n   expected: %v\n   got:      %v\n", expected, clusters)
+	}
+}

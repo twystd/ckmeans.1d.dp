@@ -47,10 +47,10 @@ int main(int argc,char *argv[]) {
 //         testWeightedInput(method);
 //         testGivenK(method);
 //         testNlteK(method);
-//         testKeq2(method);
-//         testKeq1(method);
-//         testN10K3(method);
-//         testN14K8(method);
+//         testKeq2(method);                    // Go'd
+//         testKeq1(method);                    // Go'd
+//         testN10K3(method);                   // Go'd
+//         testN14K8(method);                   // Go'd
 //         testEstimateKExampleSet1(method);
 //         testEstimateKExampleSet2(method);
 //         testEstimateKExampleSet3(method);
