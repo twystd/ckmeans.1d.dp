@@ -23,7 +23,7 @@ var ck = CKMEANS{
 // print(result$size)
 // print(result)
 
-// result <- Ckmeans.1d.dp(c(-2.5, -2.5, -2.5, -2.5), 1, method="linear")
+// result <- Ckmeans.1d.dp(c(-2.5,-2.5,-2.5,-2.5),1,method="linear")
 func TestCKMeansWithSingleUniqueValue(t *testing.T) {
 	x := []float64{-2.5, -2.5, -2.5, -2.5}
 	expected := []int{1, 1, 1, 1}
@@ -42,7 +42,7 @@ func TestCKMeansWithSingleUniqueValue(t *testing.T) {
 	}
 }
 
-// result <- Ckmeans.1d.dp(rep(1, 100), 1, method="linear")
+// result <- Ckmeans.1d.dp(rep(1,100),1,method="linear")
 func TestCKMeansK1(t *testing.T) {
 	x := make([]float64, 100)
 	expected := make([]int, 100)
@@ -70,7 +70,7 @@ func TestCKMeansK1(t *testing.T) {
 	}
 }
 
-// result <- Ckmeans.1d.dp(c(-2.5, -2.5, -2.5, -2.5), 1, c(1.2, 1.1, 0.9, 0.8), method="linear")
+// result <- Ckmeans.1d.dp(c(-2.5,-2.5,-2.5,-2.5),1,c(1.2,1.1,0.9,0.8), method="linear")
 func TestCKMeansWeightedK1(t *testing.T) {
 	x := []float64{-2.5, -2.5, -2.5, -2.5}
 	w := []float64{1.2, 1.1, 0.9, 0.8}
@@ -90,7 +90,7 @@ func TestCKMeansWeightedK1(t *testing.T) {
 	}
 }
 
-// result <- Ckmeans.1d.dp(c(1,2,3,4,5,6,7,8,9,10), 2, method="linear")
+// result <- Ckmeans.1d.dp(c(1,2,3,4,5,6,7,8,9,10),2,method="linear")
 func TestCKMeansK2(t *testing.T) {
 	x := []float64{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 	expected := []int{1, 1, 1, 1, 1, 2, 2, 2, 2, 2}
@@ -109,7 +109,7 @@ func TestCKMeansK2(t *testing.T) {
 	}
 }
 
-// result <- Ckmeans.1d.dp(c(3, 3, 3, 3, 1, 1, 1, 2, 2, 2), 3, method="linear")
+// result <- Ckmeans.1d.dp(c(3,3,3,3,1,1,1,2,2,2),3,method="linear")
 func TestCKMeansN10K3(t *testing.T) {
 	x := []float64{3, 3, 3, 3, 1, 1, 1, 2, 2, 2}
 	expected := []int{3, 3, 3, 3, 1, 1, 1, 2, 2, 2}
@@ -127,3 +127,42 @@ func TestCKMeansN10K3(t *testing.T) {
 		t.Errorf("Returned invalid clusters:\n   expected: %v\n   got:      %v\n", expected, clusters)
 	}
 }
+
+// result <- Ckmeans.1d.dp(c(-3,2.2,-6,7,9,11,-6.3,75,82.6,32.3,-9.5,62.5,7,95.2),3,method="linear")
+func TestCKMeansN14K8(t *testing.T) {
+	x := []float64{-3, 2.2, -6, 7, 9, 11, -6.3, 75, 82.6, 32.3, -9.5, 62.5, 7, 95.2}
+	expected := []int{2, 2, 1, 3, 3, 3, 1, 6, 7, 4, 1, 5, 3, 8}
+
+	k, clusters, err := ck.CKMeans(x, nil, 8, 8)
+	if err != nil {
+		t.Fatalf("Unexpected error (%v)", err)
+	}
+
+	if k != 8 {
+		t.Errorf("Expected K=%v, got: %v\n", 8, k)
+	}
+
+	if !reflect.DeepEqual(clusters, expected) {
+		t.Errorf("Returned invalid clusters:\n   expected: %v\n   got:      %v\n", expected, clusters)
+	}
+}
+
+//// test_that("n==14, k==8"...
+//void testN14K8(const std::string& method) {
+//     std::cout << "   test with n=14, k=8" << std::endl;
+//
+//     double        data[] = {-3, 2.2, -6, 7, 9, 11, -6.3, 75, 82.6, 32.3, -9.5, 62.5, 7, 95.2};
+//     cluster<14,8> p = {{},{},{},{}};
+//     cluster<14,8> q = {{2, 2, 1, 3, 3, 3, 1, 6, 7, 4, 1, 5, 3, 8},
+//                        {-7.266666667, -0.4, 8.5, 32.3, 62.5, 75.0, 82.6, 95.2},
+//                        {7.526666667, 13.52, 11.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+//                        {3, 2, 4, 1, 1, 1, 1, 1}};
+//
+//     kmeans_1d_dp(data, 14, NULL, 8, 8,
+//                  p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), p.BIC.data(),
+//                  "BIC", method, L2);
+//
+//     rebase(p);
+//     compare(p,q);
+//}
+//

@@ -59,7 +59,7 @@ int main(int argc,char *argv[]) {
 //         testTaps();
 //    }
     
-    testN10K3("linear");
+    testN14K8("linear");
 
     return 0;
 }
