@@ -46,7 +46,7 @@ int main(int argc,char *argv[]) {
 //     
 //         testWeightedInput(method);
 //         testGivenK(method);
-//         testNlteK(method);
+//         testNlteK(method);                   // Go'd
 //         testKeq2(method);                    // Go'd
 //         testKeq1(method);                    // Go'd
 //         testN10K3(method);                   // Go'd

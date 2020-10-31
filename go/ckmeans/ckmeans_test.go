@@ -23,6 +23,44 @@ var ck = CKMEANS{
 // print(result$size)
 // print(result)
 
+// result <- Ckmeans.1d.dp(c(-1,2,-1,2,4,5,6,-1,2,-1),3,method="linear")
+func TestCKMeansWithGivenK(t *testing.T) {
+	x := []float64{-1, 2, -1, 2, 4, 5, 6, -1, 2, -1}
+	expected := []int{1, 2, 1, 2, 3, 3, 3, 1, 2, 1}
+
+	k, clusters, err := ck.CKMeans(x, nil, 3, 3)
+	if err != nil {
+		t.Fatalf("Unexpected error (%v)", err)
+	}
+
+	if k != 3 {
+		t.Errorf("Expected K=%v, got: %v\n", 3, k)
+	}
+
+	if !reflect.DeepEqual(clusters, expected) {
+		t.Errorf("Returned invalid clusters:\n   expected: %v\n   got:      %v\n", expected, clusters)
+	}
+}
+
+// result <- Ckmeans.1d.dp(c(3,2,-5.4,0.1),4,method="linear")
+func TestCKNlteK(t *testing.T) {
+	x := []float64{3, 2, -5.4, 0.1}
+	expected := []int{4, 3, 1, 2}
+
+	k, clusters, err := ck.CKMeans(x, nil, 4, 4)
+	if err != nil {
+		t.Fatalf("Unexpected error (%v)", err)
+	}
+
+	if k != 4 {
+		t.Errorf("Expected K=%v, got: %v\n", 4, k)
+	}
+
+	if !reflect.DeepEqual(clusters, expected) {
+		t.Errorf("Returned invalid clusters:\n   expected: %v\n   got:      %v\n", expected, clusters)
+	}
+}
+
 // result <- Ckmeans.1d.dp(c(-2.5,-2.5,-2.5,-2.5),1,method="linear")
 func TestCKMeansWithSingleUniqueValue(t *testing.T) {
 	x := []float64{-2.5, -2.5, -2.5, -2.5}
@@ -35,6 +73,25 @@ func TestCKMeansWithSingleUniqueValue(t *testing.T) {
 
 	if k != 1 {
 		t.Errorf("Expected K=%v, got: %v\n", 1, k)
+	}
+
+	if !reflect.DeepEqual(clusters, expected) {
+		t.Errorf("Returned invalid clusters:\n   expected: %v\n   got:      %v\n", expected, clusters)
+	}
+}
+
+// result <- Ckmeans.1d.dp(c(1,2,3,4,5,6,7,8,9,10),2,method="linear")
+func TestCKMeansK2(t *testing.T) {
+	x := []float64{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+	expected := []int{1, 1, 1, 1, 1, 2, 2, 2, 2, 2}
+
+	k, clusters, err := ck.CKMeans(x, nil, 2, 2)
+	if err != nil {
+		t.Fatalf("Unexpected error (%v)", err)
+	}
+
+	if k != 2 {
+		t.Errorf("Expected K=%v, got: %v\n", 2, k)
 	}
 
 	if !reflect.DeepEqual(clusters, expected) {
@@ -90,25 +147,6 @@ func TestCKMeansWeightedK1(t *testing.T) {
 	}
 }
 
-// result <- Ckmeans.1d.dp(c(1,2,3,4,5,6,7,8,9,10),2,method="linear")
-func TestCKMeansK2(t *testing.T) {
-	x := []float64{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
-	expected := []int{1, 1, 1, 1, 1, 2, 2, 2, 2, 2}
-
-	k, clusters, err := ck.CKMeans(x, nil, 2, 2)
-	if err != nil {
-		t.Fatalf("Unexpected error (%v)", err)
-	}
-
-	if k != 2 {
-		t.Errorf("Expected K=%v, got: %v\n", 2, k)
-	}
-
-	if !reflect.DeepEqual(clusters, expected) {
-		t.Errorf("Returned invalid clusters:\n   expected: %v\n   got:      %v\n", expected, clusters)
-	}
-}
-
 // result <- Ckmeans.1d.dp(c(3,3,3,3,1,1,1,2,2,2),3,method="linear")
 func TestCKMeansN10K3(t *testing.T) {
 	x := []float64{3, 3, 3, 3, 1, 1, 1, 2, 2, 2}
@@ -140,25 +178,6 @@ func TestCKMeansN14K8(t *testing.T) {
 
 	if k != 8 {
 		t.Errorf("Expected K=%v, got: %v\n", 8, k)
-	}
-
-	if !reflect.DeepEqual(clusters, expected) {
-		t.Errorf("Returned invalid clusters:\n   expected: %v\n   got:      %v\n", expected, clusters)
-	}
-}
-
-// result <- Ckmeans.1d.dp(c(3,2,-5.4,0.1),4,method="linear")
-func TestCKNlteK(t *testing.T) {
-	x := []float64{3, 2, -5.4, 0.1}
-	expected := []int{4, 3, 1, 2}
-
-	k, clusters, err := ck.CKMeans(x, nil, 4, 4)
-	if err != nil {
-		t.Fatalf("Unexpected error (%v)", err)
-	}
-
-	if k != 4 {
-		t.Errorf("Expected K=%v, got: %v\n", 4, k)
 	}
 
 	if !reflect.DeepEqual(clusters, expected) {
