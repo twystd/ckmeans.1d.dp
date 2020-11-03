@@ -160,26 +160,28 @@ func (ck *CKMEANS) ckmeans(data, weights []float64, kmin, kmax int) (int, []int,
 			// Kopt = select_levels_3_4_12(x_sorted, J, Kmin, Kmax, BIC);
 		}
 	} else {
-		panic("NOT IMPLEMENTED")
-		// fill_dp_matrix(x_sorted, y_sorted, S, J, method, criterion);
-		//
-		// switch(criterion) {
-		// case L2Y:
+		fill_dp_matrix(x, w, S, J, ck.Method, ck.Criterion)
+
+		switch ck.Criterion {
+		case L2Y:
+			panic("NOT IMPLEMENTED")
 		//      if (estimate_k=="BIC") {
 		//         Kopt = select_levels(y_sorted, J, Kmin, Kmax, BIC);
 		//      } else {
 		//         Kopt = select_levels_3_4_12(y_sorted, J, Kmin, Kmax, BIC);
 		//      }
 		//      break;
-		//
-		// default:
-		//      if (estimate_k=="BIC") {
-		//         // Choose an optimal number of levels between Kmin and Kmax
-		//         Kopt = select_levels_weighted(x_sorted, y_sorted, J, Kmin, Kmax, BIC);
-		//      } else {
-		//         Kopt = select_levels_weighted_3_4_12(x_sorted, y_sorted, J, Kmin, Kmax, BIC);
-		//      }
-		// }
+
+		default:
+			if ck.EstimateK == BIC {
+				bic := []float64{}
+				// Choose an optimal number of levels between Kmin and Kmax
+				kopt = select_levels_weighted(x, w, J, kmin, kmax, bic)
+			} else {
+				panic("NOT IMPLEMENTED")
+				//         Kopt = select_levels_weighted_3_4_12(x_sorted, y_sorted, J, Kmin, Kmax, BIC);
+			}
+		}
 	}
 
 	if kopt < kmax { // Reform the dynamic programming matrix S and J
