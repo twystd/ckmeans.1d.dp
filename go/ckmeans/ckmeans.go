@@ -89,7 +89,7 @@ func (ck *CKMEANS) CKMeans(data, weights []float64, kmin, kmax int) (int, []int,
 	return ck.ckmeans(data, weights, kmin, kmax)
 }
 
-// FIXME: assumes equally weighted, L2, BIC
+// FIXME: assumes L2, BIC
 func (ck *CKMEANS) ckmeans(data, weights []float64, kmin, kmax int) (int, []int, error) {
 	// ... validate
 
@@ -174,7 +174,7 @@ func (ck *CKMEANS) ckmeans(data, weights []float64, kmin, kmax int) (int, []int,
 
 		default:
 			if ck.EstimateK == BIC {
-				bic := []float64{}
+				bic := make([]float64, kmax)
 				// Choose an optimal number of levels between Kmin and Kmax
 				kopt = select_levels_weighted(x, w, J, kmin, kmax, bic)
 			} else {

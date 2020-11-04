@@ -1,6 +1,8 @@
 package ckmeans
 
-import ()
+import (
+	"fmt"
+)
 
 func backtrack3(x []float64, J [][]int, k int) []int {
 	count := make([]int, k)
@@ -47,6 +49,29 @@ func backtrack6(x []float64, J [][]int, cluster []int, centers []float64, within
 		count[q] = float64(cluster_right - cluster_left + 1)
 
 		if q > 0 {
+			cluster_right = cluster_left - 1
+		}
+	}
+}
+
+func backtrackWeighted6(x, y []float64, J [][]int, counts []int, weights []float64, K int) {
+	N := len(J[0])
+	cluster_right := N - 1
+
+	fmt.Printf(">>> J: %v\n", J)
+
+	// Backtrack the clusters from the dynamic programming matrix
+	for k := K - 1; k >= 0; k-- {
+		cluster_left := J[k][cluster_right]
+		println(">>", k, cluster_left, cluster_right)
+		counts[k] = cluster_right - cluster_left + 1
+
+		weights[k] = 0
+		for i := cluster_left; i <= cluster_right; i++ {
+			weights[k] += y[i]
+		}
+
+		if k > 0 {
 			cluster_right = cluster_left - 1
 		}
 	}
@@ -116,7 +141,7 @@ func fill_dp_matrix(x, w []float64, S [][]float64, J [][]int, method Method, cri
 		// fill_row_k_linear_recursive(imin, N-1, 1, q, jseq, S, J, sum_x, sum_x_sq);
 		// fill_row_k_linear(imin, N-1, q, S, J, sum_x, sum_x_sq);
 		if method == Linear {
-			// #       fill_row_q_SMAWK(imin, N-1, q, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq, criterion);
+			fill_row_q_SMAWK(imin, N-1, q, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq, criterion)
 			//		} else if method == "loglinear" {
 			//			panic("NOT IMPLEMENTED")
 			//			// #       fill_row_q_log_linear(imin, N-1, q, q, N-1, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq, criterion);
@@ -136,14 +161,15 @@ func dissimilarity(dis Criterion, j, i int, sum_x, sum_x_sq, sum_w, sum_w_sq []f
 	switch dis {
 	case L1:
 		d = sabs(j, i, sum_x, sum_w)
-		break
+
 	case L2:
 		d = ssq(j, i, sum_x, sum_x_sq, sum_w)
-		break
+
 	case L2Y:
 		d = ssq(j, i, sum_w, sum_w_sq, nil)
-		break
+
 	}
+
 	return d
 }
 
