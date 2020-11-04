@@ -288,7 +288,7 @@ func TestCKMeansEstimateKExampleSet1(t *testing.T) {
 // result <- Ckmeans.1d.dp(c(-0.8390715,-0.9111303,-0.1455000,0.7539023,0.9601703,0.2836622,
 //                           -0.6536436,-0.9899925,-0.4161468,0.5403023,1.0000000,0.5403023,
 //                           -0.4161468,-0.9899925,-0.6536436,0.2836622,0.9601703,0.7539023,
-//                           -0.1455000,-0.9111303,-0.8390715),1,6,method="linear")
+//                           -0.1455000,-0.9111303,-0.8390715),1,21,method="linear")
 func TestCKMeansEstimateKExampleSet2(t *testing.T) {
 	x := []float64{
 		-0.8390715, -0.9111303, -0.1455000, 0.7539023, 0.9601703, 0.2836622,
@@ -298,13 +298,37 @@ func TestCKMeansEstimateKExampleSet2(t *testing.T) {
 	}
 	expected := []int{1, 1, 1, 2, 2, 2, 1, 1, 1, 2, 2, 2, 1, 1, 1, 2, 2, 2, 1, 1, 1}
 
-	k, clusters, err := ck.CKMeans(x, nil, 1, 6)
+	k, clusters, err := ck.CKMeans(x, nil, 1, 21)
 	if err != nil {
 		t.Fatalf("Unexpected error (%v)", err)
 	}
 
 	if k != 2 {
 		t.Errorf("Expected K=%v, got: %v\n", 2, k)
+	}
+
+	if !reflect.DeepEqual(clusters, expected) {
+		t.Errorf("Returned invalid clusters:\n   expected: %v\n   got:      %v\n", expected, clusters)
+	}
+}
+
+// result <- Ckmeans.1d.dp(dgamma(seq(1,10, by=0.5), shape=2, rate=1),1,19,method="linear")
+func TestCKMeansEstimateKExampleSet3(t *testing.T) {
+	x := []float64{
+		0.3678794412, 0.3346952402, 0.2706705665, 0.2052124966, 0.1493612051,
+		0.1056908420, 0.0732625556, 0.0499904844, 0.0336897350, 0.0224772429,
+		0.0148725131, 0.0097723548, 0.0063831738, 0.0041481328, 0.0026837010,
+		0.0017294811, 0.0011106882, 0.0007110924, 0.0004539993,
+	}
+	expected := []int{3, 3, 3, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+
+	k, clusters, err := ck.CKMeans(x, nil, 1, 19)
+	if err != nil {
+		t.Fatalf("Unexpected error (%v)", err)
+	}
+
+	if k != 3 {
+		t.Errorf("Expected K=%v, got: %v\n", 3, k)
 	}
 
 	if !reflect.DeepEqual(clusters, expected) {
