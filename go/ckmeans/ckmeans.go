@@ -46,30 +46,26 @@ func (ck *CKMEANS) CKMeans(data, weights []float64, kmin, kmax int) (int, []int,
 		panic("Invalid K")
 	}
 
-	// TODO kmax > len(data)
-	if kmax > len(data) {
-		panic("Invalid Kmax")
+	// TODO move this to ckmeans (and eliminate redundant sort)
+	sorted := make([]float64, len(data))
+	copy(sorted, data)
+	sort.Float64s(sorted)
+
+	unique := 1
+	p := data[0]
+	for _, q := range data[1:] {
+		if q != p {
+			p = q
+			unique += 1
+		}
 	}
 
-	// TODO move this to ckmeans (and eliminate redundant sort)
-	// edge case: single unique value
-	if kmax > 1 {
-		sorted := make([]float64, len(data))
-		copy(sorted, data)
-		sort.Float64s(sorted)
+	if unique == 1 {
+		kmax = 1
+	}
 
-		unique := 1
-		p := data[0]
-		for _, q := range data[1:] {
-			if q != p {
-				p = q
-				unique += 1
-			}
-		}
-
-		if unique == 1 {
-			kmax = 1
-		}
+	if unique < kmax {
+		kmax = unique
 	}
 
 	// special case: K=1
