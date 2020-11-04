@@ -202,8 +202,7 @@ func (ck *CKMEANS) ckmeans(data, weights []float64, kmin, kmax int) (int, []int,
 		panic("NOT IMPLEMENTED")
 		//       backtrack_L2Y(x_sorted, y_sorted, J, &cluster_sorted[0], centers, withinss, size);
 	} else {
-		panic("NOT IMPLEMENTED")
-		//       backtrack_weighted(x_sorted, y_sorted, J, &cluster_sorted[0], centers, withinss, size);
+		backtrackWeighted7(x, w, J, cluster_sorted, centers, withinss, size)
 	}
 
 	clusters := make([]int, N)

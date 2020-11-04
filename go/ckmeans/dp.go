@@ -1,8 +1,6 @@
 package ckmeans
 
-import (
-	"fmt"
-)
+import ()
 
 func backtrack3(x []float64, J [][]int, k int) []int {
 	count := make([]int, k)
@@ -58,18 +56,50 @@ func backtrackWeighted6(x, y []float64, J [][]int, counts []int, weights []float
 	N := len(J[0])
 	cluster_right := N - 1
 
-	fmt.Printf(">>> J: %v\n", J)
-
 	// Backtrack the clusters from the dynamic programming matrix
 	for k := K - 1; k >= 0; k-- {
 		cluster_left := J[k][cluster_right]
-		println(">>", k, cluster_left, cluster_right)
 		counts[k] = cluster_right - cluster_left + 1
 
 		weights[k] = 0
 		for i := cluster_left; i <= cluster_right; i++ {
 			weights[k] += y[i]
 		}
+
+		if k > 0 {
+			cluster_right = cluster_left - 1
+		}
+	}
+}
+
+func backtrackWeighted7(x, y []float64, J [][]int, cluster []int, centers, withinss, weights []float64) {
+	K := len(J)
+	N := len(J[0])
+	cluster_right := N - 1
+
+	// Backtrack the clusters from the dynamic programming matrix
+	for k := K - 1; k >= 0; k-- {
+		cluster_left := J[k][cluster_right]
+
+		for i := cluster_left; i <= cluster_right; i++ {
+			cluster[i] = k
+		}
+
+		sum := 0.0
+		weight := 0.0
+
+		for i := cluster_left; i <= cluster_right; i++ {
+			sum += x[i] * y[i]
+			weight += y[i]
+		}
+
+		centers[k] = sum / weight
+
+		for i := cluster_left; i <= cluster_right; i++ {
+			withinss[k] += y[i] * (x[i] - centers[k]) * (x[i] - centers[k])
+		}
+
+		weights[k] = weight
 
 		if k > 0 {
 			cluster_right = cluster_left - 1
