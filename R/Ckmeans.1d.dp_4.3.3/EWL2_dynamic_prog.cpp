@@ -72,6 +72,7 @@ void fill_dp_matrix(const std::vector<double> & x, // data
 #endif
                 // fill_row_k_linear_recursive(imin, N-1, 1, q, jseq, S, J, sum_x, sum_x_sq);
                 // fill_row_k_linear(imin, N-1, q, S, J, sum_x, sum_x_sq);
+
                 if(method == "linear") {
                         fill_row_q_SMAWK(imin, N-1, q, S, J, sum_x, sum_x_sq);
                 } else if(method == "loglinear") {

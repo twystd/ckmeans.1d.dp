@@ -39,27 +39,26 @@ void testTaps();
 int main(int argc,char *argv[]) {
     std::cout << "ckmeans v4.3.3" << std::endl;
 
-//    std::string methods[] = { "linear", "loglinear", "quadratic" };
-//
-//    for (const std::string &method: methods) {
-//         std::cout << std::endl << method << std::endl;
-//     
-//         testWeightedInput(method);           // Go'd
-//         testGivenK(method);                  // Go'd
-//         testNlteK(method);                   // Go'd
-//         testKeq2(method);                    // Go'd
-//         testKeq1(method);                    // Go'd
-//         testN10K3(method);                   // Go'd
-//         testN14K8(method);                   // Go'd
-//         testEstimateKExampleSet1(method);
-//         testEstimateKExampleSet2(method);
-//         testEstimateKExampleSet3(method);
-//         testEstimateKExampleSet4(method);
-//
-//         testTaps();
-//    }
+   std::string methods[] = { "linear", "loglinear", "quadratic" };
+
+   for (const std::string &method: methods) {
+        std::cout << std::endl << method << std::endl;
     
-    testEstimateKExampleSet1("linear");
+        testWeightedInput(method);           // Go'd
+        testGivenK(method);                  // Go'd
+        testNlteK(method);                   // Go'd
+        testKeq2(method);                    // Go'd
+        testKeq1(method);                    // Go'd
+        testN10K3(method);                   // Go'd
+        testN14K8(method);                   // Go'd
+        testEstimateKExampleSet1(method);
+        testEstimateKExampleSet2(method);
+        testEstimateKExampleSet3(method);
+        testEstimateKExampleSet4(method);
+
+   }
+    
+    testTaps();
 
     return 0;
 }
@@ -281,8 +280,8 @@ void testEstimateKExampleSet1(const std::string& method) {
      std::cout << "   test estimate K, example set 1" << std::endl;
 
      { double       data[] = {0.9, 1, 1.1, 1.9, 2, 2.1};
-       cluster<6,2> p = {{},{},{},{}};
-       cluster<6,2> q = {{1,1,1,2,2,2},{1,2},{0.02,0.02},{3,3}};
+       cluster<6,6> p = {{},{},{},{}};
+       cluster<6,6> q = {{1,1,1,2,2,2},{1,2},{0.02,0.02},{3,3}};
 
        kmeans_1d_dp(data, 6, NULL, 1, 6,
                     p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), p.BIC.data(),
@@ -293,8 +292,8 @@ void testEstimateKExampleSet1(const std::string& method) {
      }
 
      { double       data[] = {2.1, 2, 1.9, 1.1, 1, 0.9};
-       cluster<6,2> p = {{},{},{},{}};
-       cluster<6,2> q = {{2,2,2,1,1,1},{1,2},{0.02,0.02},{3,3}};
+       cluster<6,6> p = {{},{},{},{}};
+       cluster<6,6> q = {{2,2,2,1,1,1},{1,2},{0.02,0.02},{3,3}};
 
        kmeans_1d_dp(data, 6, NULL, 1, 6,
                     p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), p.BIC.data(),
@@ -305,8 +304,8 @@ void testEstimateKExampleSet1(const std::string& method) {
      }
 
      { double       data[] = {2.1, 2, 1.9, 1.1, 1, 0.9};
-       cluster<6,2> p = {{},{},{},{}};
-       cluster<6,2> q = {{2,2,2,1,1,1},{1,2},{0.02,0.02},{3,3}};
+       cluster<6,6> p = {{},{},{},{}};
+       cluster<6,6> q = {{2,2,2,1,1,1},{1,2},{0.02,0.02},{3,3}};
 
        kmeans_1d_dp(data, 6, NULL, 1, 10,
                     p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), p.BIC.data(),

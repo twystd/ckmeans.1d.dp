@@ -42,10 +42,7 @@ void reduce_in_place(int imin, int imax, int istep, int q,
 
   js_red = js;
 
-  std::cout << "reduce_in_place " << N << " len(js):" << js.size() << std::endl;
-
   if(N >= js.size()) {
-    std::cout << "skipping for now " << std::endl;
     return;
   }
 
