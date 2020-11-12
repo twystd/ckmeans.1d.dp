@@ -3,7 +3,7 @@ package ckmeans
 import (
 	"sort"
 
-	"github.com/twystd/ckmeans.1d.dp/go/ckmeans/EWL2"
+	"github.com/twystd/ckmeans.1d.dp/reference/go/ckmeans/EWL2"
 )
 
 type CKMEANS struct {
@@ -93,36 +93,7 @@ func (ck *CKMEANS) CKMeans(data, weights []float64, kmin, kmax int) (Clusters, e
 
 	// K > 1
 
-	k, clusters, err := ck.ckmeans(data, weights, kmin, kmax)
-
-	cx := make([][]float64, k)
-	wx := make([][]float64, k)
-	centers := make([]float64, k)
-
-	if weights == nil {
-		for i := range clusters {
-			ix := clusters[i] - 1
-			cx[ix] = append(cx[ix], data[i])
-			wx[ix] = append(wx[ix], 1.0)
-		}
-	} else {
-		for i := range clusters {
-			ix := clusters[i] - 1
-			cx[ix] = append(cx[ix], data[i]*weights[i])
-			wx[ix] = append(wx[ix], weights[i])
-		}
-	}
-
-	for i, c := range cx {
-		sum := 0.0
-		sumw := 0.0
-		for j := range c {
-			sum += cx[i][j]
-			sumw += wx[i][j]
-		}
-
-		centers[i] = sum / sumw
-	}
+	k, clusters, centers, err := ck.ckmeans(data, weights, kmin, kmax)
 
 	return Clusters{
 		K:       k,
@@ -132,7 +103,7 @@ func (ck *CKMEANS) CKMeans(data, weights []float64, kmin, kmax int) (Clusters, e
 }
 
 // FIXME: assumes L2, BIC
-func (ck *CKMEANS) ckmeans(data, weights []float64, kmin, kmax int) (int, []int, error) {
+func (ck *CKMEANS) ckmeans(data, weights []float64, kmin, kmax int) (int, []int, []float64, error) {
 	// ... validate
 
 	if ck.Method != Linear {
@@ -252,5 +223,5 @@ func (ck *CKMEANS) ckmeans(data, weights []float64, kmin, kmax int) (int, []int,
 		clusters[order[i]] = cluster_sorted[i] + 1 // '1' based clustering a la 'R' implementation
 	}
 
-	return kopt, clusters, nil
+	return kopt, clusters, centers, nil
 }
