@@ -127,7 +127,8 @@ void testWeightedInput(const std::string& method) {
      { double data[]    = {-0.9, 1, 1.1, 1.9, 2, 2.1};
        double weights[] = { 3,   1, 2,   2,   1, 1  };
        cluster<6,3> p = {{},{},{},{}};
-       cluster<6,3> q = {{1,2,2,3,3,3},{-0.9, (1+2.2)/3, (1.9*2+2+2.1)/4},{0,0.00666667,0.0275},{3,3,4}};
+       cluster<6,3> q = {{1,2,2,3,3,3},{-0.9, 1.0666667, 1.975},{0,0.00666667,0.0275},{3,3,4}};
+//     cluster<6,3> q = {{1,2,2,3,3,3},{-0.9, (1+2.2)/3, (1.9*2+2+2.1)/4},{0,0.00666667,0.0275},{3,3,4}};
 
        kmeans_1d_dp(data, 6, weights, 1, 6,
                     p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), p.BIC.data(),

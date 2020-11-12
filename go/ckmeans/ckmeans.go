@@ -4,10 +4,15 @@ import (
 	"sort"
 )
 
-func CKMeans(data, weights []float64) [][]float64 {
+type Cluster struct {
+	Center float64
+	Values []float64
+}
+
+func CKMeans1dDp(data, weights []float64) []Cluster {
 	// validate inputs
 	if data == nil || len(data) == 0 {
-		return [][]float64{}
+		return []Cluster{}
 	}
 
 	if weights != nil && len(weights) != len(data) {
@@ -57,9 +62,16 @@ func CKMeans(data, weights []float64) [][]float64 {
 		index[order[i]] = clusters[i]
 	}
 
-	clustered := make([][]float64, k)
+	centers := centers(data, weights, k, index)
+
+	clustered := make([]Cluster, k)
+
+	for i := 0; i < k; i++ {
+		clustered[i].Center = centers[i]
+	}
+
 	for i, ix := range index {
-		clustered[ix] = append(clustered[ix], data[i])
+		clustered[ix].Values = append(clustered[ix].Values, data[i])
 	}
 
 	return clustered

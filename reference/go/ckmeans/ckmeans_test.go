@@ -142,6 +142,7 @@ func TestCKMeansN14K8(t *testing.T) {
 }
 
 // result <- Ckmeans.1d.dp(c(-1,2,4,5,6),3,method="linear")
+// result <- Ckmeans.1d.dp(c(-0.9, 1, 1.1, 1.9, 2, 2.1),c(3, 1, 2, 2, 1, 1),3,method="linear")
 func TestCKMeansWithWeightedInput(t *testing.T) {
 	{
 		x := []float64{-1, 2, 4, 5, 6}
@@ -163,8 +164,9 @@ func TestCKMeansWithWeightedInput(t *testing.T) {
 		expected := Clusters{
 			K:       3,
 			Index:   []int{1, 2, 2, 3, 3, 3},
-			Centers: []float64{-0.9, (1 + 2.2) / 3, (1.9*2 + 2 + 2.1) / 4},
-			//{0,0.00666667,0.0275},{3,3,4}};
+			Centers: []float64{-0.9, 1.0666666666666667, 1.975},
+			// Centers: []float64{-0.9, (1 + 2.2) / 3, (1.9*2 + 2 + 2.1) / 4},
+			//{0,1.00666667,0.0275},{3,3,4}};
 
 		}
 

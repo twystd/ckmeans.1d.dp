@@ -47,7 +47,7 @@ func main() {
 		fmt.Printf("  ... %v values read from %s\n", len(data), file)
 	}
 
-	clusters := ckmeans.CKMeans(data, nil)
+	clusters := ckmeans.CKMeans1dDp(data, nil)
 
 	if options.debug {
 		fmt.Printf("  ... %v clusters\n", len(clusters))
@@ -80,11 +80,11 @@ func read(f string) ([]float64, error) {
 	return data, nil
 }
 
-func print(clusters [][]float64) {
+func print(clusters []ckmeans.Cluster) {
 	columns := 0
 	for _, c := range clusters {
-		if len(c) >= columns {
-			columns = len(c) + 1
+		if len(c.Values) >= columns {
+			columns = len(c.Values) + 1
 		}
 	}
 
@@ -95,7 +95,7 @@ func print(clusters [][]float64) {
 
 	for i, c := range clusters {
 		table[i][0] = fmt.Sprintf("%d", i+1)
-		for j, v := range c {
+		for j, v := range c.Values {
 			table[i][j+1] = fmt.Sprintf("%v", v)
 		}
 	}
@@ -118,7 +118,7 @@ func print(clusters [][]float64) {
 		line := ""
 		line += fmt.Sprintf(formats[0], i+1)
 		line += "  "
-		for j, v := range c {
+		for j, v := range c.Values {
 			line += " "
 			line += fmt.Sprintf(formats[j+1], v)
 		}
