@@ -12,6 +12,12 @@ type CKMEANS struct {
 	Criterion Criterion
 }
 
+type Clusters struct {
+	K       int
+	Index   []int
+	Centers []float64
+}
+
 type Method int
 type Criterion int
 type EstimateK int
@@ -30,7 +36,7 @@ const (
 	BIC EstimateK = iota + 1
 )
 
-func (ck *CKMEANS) CKMeans(data, weights []float64, kmin, kmax int) (int, []int, error) {
+func (ck *CKMEANS) CKMeans(data, weights []float64, kmin, kmax int) (Clusters, error) {
 	// TODO data nil/empty
 	if data == nil {
 		panic("Invalid data")
@@ -72,21 +78,36 @@ func (ck *CKMEANS) CKMeans(data, weights []float64, kmin, kmax int) (int, []int,
 	if kmax == 1 {
 		N := len(data)
 		clusters := make([]int, N)
+		centers := []float64{data[0]}
 
 		for i := range clusters {
 			clusters[i] = 1
 		}
 
-		return 1, clusters, nil
+		if weights != nil {
+			centers[0] = weights[0] * data[0]
+		}
+
+		return Clusters{
+			K:       1,
+			Index:   clusters,
+			Centers: centers,
+		}, nil
 	}
 
 	// K > 1
 
-	return ck.ckmeans(data, weights, kmin, kmax)
+	k, clusters, centers, err := ck.ckmeans(data, weights, kmin, kmax)
+
+	return Clusters{
+		K:       k,
+		Index:   clusters,
+		Centers: centers[:k],
+	}, err
 }
 
 // FIXME: assumes L2, BIC
-func (ck *CKMEANS) ckmeans(data, weights []float64, kmin, kmax int) (int, []int, error) {
+func (ck *CKMEANS) ckmeans(data, weights []float64, kmin, kmax int) (int, []int, []float64, error) {
 	// ... validate
 
 	if ck.Method != Linear {
@@ -206,5 +227,5 @@ func (ck *CKMEANS) ckmeans(data, weights []float64, kmin, kmax int) (int, []int,
 		clusters[order[i]] = cluster_sorted[i] + 1 // '1' based clustering a la 'R' implementation
 	}
 
-	return kopt, clusters, nil
+	return kopt, clusters, centers, nil
 }
