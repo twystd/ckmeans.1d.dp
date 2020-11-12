@@ -308,7 +308,7 @@ func testCKMeans(x, w []float64, kmin, kmax int, expected Clusters, t *testing.T
 
 	if expected.Centers != nil {
 		for i := range expected.Centers {
-			if math.Abs(clusters.Centers[i]-expected.Centers[i]) > 0.0000001 {
+			if math.IsNaN(clusters.Centers[i]) || math.Abs(clusters.Centers[i]-expected.Centers[i]) > 0.0000001 {
 				t.Errorf("Returned invalid centers:\n   expected: %v\n   got:      %v\n", expected.Centers, clusters.Centers)
 				break
 			}

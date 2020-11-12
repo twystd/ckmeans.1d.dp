@@ -19,10 +19,12 @@ func backtrack3(x []float64, J [][]int, k int) []int {
 	return count
 }
 
-func backtrack6(x []float64, J [][]int, cluster []int, centers []float64, withinss []float64, count []float64) {
+func backtrack6(x []float64, J [][]int, cluster []int, unused, withinss []float64, count []float64) {
 	K := len(J)
 	N := len(J[0])
 	var cluster_right = N - 1
+
+	centers := make([]float64, K)
 
 	// Backtrack the clusters from the dynamic programming matrix
 	for q := K - 1; q >= 0; q-- {
@@ -72,10 +74,12 @@ func backtrackWeighted6(x, y []float64, J [][]int, counts []int, weights []float
 	}
 }
 
-func backtrackWeighted7(x, y []float64, J [][]int, cluster []int, centers, withinss, weights []float64) {
+func backtrackWeighted7(x, y []float64, J [][]int, cluster []int, unused, withinss, weights []float64) {
 	K := len(J)
 	N := len(J[0])
 	cluster_right := N - 1
+
+	centers := make([]float64, K)
 
 	// Backtrack the clusters from the dynamic programming matrix
 	for k := K - 1; k >= 0; k-- {
