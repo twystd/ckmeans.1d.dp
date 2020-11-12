@@ -107,7 +107,7 @@ func TestCKMeansWeightedK1(t *testing.T) {
 	expected := Clusters{
 		K:       1,
 		Index:   []int{1, 1, 1, 1},
-		Centers: []float64{-2.5 * 1.2},
+		Centers: []float64{-2.5},
 	}
 
 	testCKMeans(x, w, 1, 1, expected, t)

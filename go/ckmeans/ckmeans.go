@@ -84,10 +84,6 @@ func (ck *CKMEANS) CKMeans(data, weights []float64, kmin, kmax int) (Clusters, e
 			clusters[i] = 1
 		}
 
-		if weights != nil {
-			centers[0] = weights[0] * data[0]
-		}
-
 		return Clusters{
 			K:       1,
 			Index:   clusters,
