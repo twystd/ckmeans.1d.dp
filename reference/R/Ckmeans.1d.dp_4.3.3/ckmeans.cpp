@@ -6,7 +6,7 @@
 #include <random>
 #include <cmath>
 
-#include "Ckmeans.1d.dp.h"
+#include "src/Ckmeans.1d.dp.h"
 
 template <int N, int K> struct cluster {
    std::array<int,N>    clusters;
