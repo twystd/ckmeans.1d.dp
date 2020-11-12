@@ -8,7 +8,7 @@ import (
 	"regexp"
 	"strconv"
 
-	"github.com/twystd/ckmeans/go/ckmeans"
+	"github.com/twystd/ckmeans.1d.dp/go/ckmeans"
 )
 
 const VERSION = "v0.0.0"
