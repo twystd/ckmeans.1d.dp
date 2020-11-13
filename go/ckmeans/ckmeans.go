@@ -5,8 +5,9 @@ import (
 )
 
 type Cluster struct {
-	Center float64
-	Values []float64
+	Center   float64
+	Variance float64
+	Values   []float64
 }
 
 func CKMeans1dDp(data, weights []float64) []Cluster {
@@ -62,12 +63,15 @@ func CKMeans1dDp(data, weights []float64) []Cluster {
 		index[order[i]] = clusters[i]
 	}
 
+	// TODO inline this to avoid redundant data shuffling
 	centers := centers(data, weights, k, index)
+	withinss := withinss(data, weights, k, index)
 
 	clustered := make([]Cluster, k)
 
 	for i := 0; i < k; i++ {
 		clustered[i].Center = centers[i]
+		clustered[i].Variance = withinss[i]
 	}
 
 	for i, ix := range index {
@@ -97,9 +101,8 @@ func ckmeans(x, w []float64, kmin, kmax int) (int, []int) {
 	}
 
 	cluster_sorted := make([]int, N)
-	withinss := make([]float64, N)
 	size := make([]float64, kmax)
-	backtrackWeightedX(x, w, J, cluster_sorted, withinss, size)
+	backtrackWeightedX(x, w, J, cluster_sorted, size)
 
 	return kopt, cluster_sorted
 }

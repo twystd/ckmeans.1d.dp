@@ -23,3 +23,20 @@ func centers(data, weights []float64, k int, index []int) []float64 {
 
 	return centers
 }
+
+func withinss(data, weights []float64, k int, index []int) []float64 {
+	withinss := make([]float64, k)
+	centers := centers(data, weights, k, index)
+
+	if weights == nil || len(weights) == 0 {
+		for i, ix := range index {
+			withinss[ix] += (data[i] - centers[ix]) * (data[i] - centers[ix])
+		}
+	} else {
+		for i, ix := range index {
+			withinss[ix] += weights[i] * (data[i] - centers[ix]) * (data[i] - centers[ix])
+		}
+	}
+
+	return withinss
+}
