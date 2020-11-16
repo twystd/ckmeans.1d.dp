@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"regexp"
@@ -14,12 +16,15 @@ import (
 const VERSION = "v0.0.0"
 
 var options = struct {
-	debug bool
+	outfile string
+	debug   bool
 }{
-	debug: false,
+	outfile: "",
+	debug:   false,
 }
 
 func main() {
+	flag.StringVar(&options.outfile, "out", options.outfile, "output file path")
 	flag.BoolVar(&options.debug, "debug", options.debug, "enables debugging")
 	flag.Parse()
 
@@ -53,9 +58,17 @@ func main() {
 		fmt.Printf("  ... %v clusters\n", len(clusters))
 	}
 
-	fmt.Println()
-	print(clusters)
-	fmt.Println()
+	var b bytes.Buffer
+
+	print(&b, clusters)
+
+	if options.outfile == "" {
+		fmt.Println()
+		fmt.Printf("%s", string(b.Bytes()))
+		fmt.Println()
+	} else {
+		ioutil.WriteFile(options.outfile, b.Bytes(), 0644)
+	}
 }
 
 func read(f string) ([]float64, error) {
@@ -80,13 +93,14 @@ func read(f string) ([]float64, error) {
 	return data, nil
 }
 
-func print(clusters []ckmeans.Cluster) {
+func print(f io.Writer, clusters []ckmeans.Cluster) {
 	columns := 0
 	for _, c := range clusters {
-		if len(c.Values) >= columns {
-			columns = len(c.Values) + 1
+		if len(c.Values) > columns {
+			columns = len(c.Values)
 		}
 	}
+	columns += 2
 
 	table := make([][]string, len(clusters))
 	for i := range table {
@@ -95,8 +109,9 @@ func print(clusters []ckmeans.Cluster) {
 
 	for i, c := range clusters {
 		table[i][0] = fmt.Sprintf("%d", i+1)
+		table[i][1] = fmt.Sprintf("%v", c.Center)
 		for j, v := range c.Values {
-			table[i][j+1] = fmt.Sprintf("%v", v)
+			table[i][j+2] = fmt.Sprintf("%v", v)
 		}
 	}
 
@@ -118,22 +133,16 @@ func print(clusters []ckmeans.Cluster) {
 		line := ""
 		line += fmt.Sprintf(formats[0], i+1)
 		line += "  "
+		line += fmt.Sprintf(formats[1], c.Center)
+		line += "  "
 		for j, v := range c.Values {
 			line += " "
-			line += fmt.Sprintf(formats[j+1], v)
+			line += fmt.Sprintf(formats[j+2], v)
 		}
-		fmt.Printf("%s\n", line)
+
+		fmt.Fprintf(f, "%s\n", line)
 	}
 }
-
-// func format(array []float64) string {
-// 	var b bytes.Buffer
-// 	for _, v := range array {
-// 		fmt.Fprintf(&b, "%0.6f ", v)
-// 	}
-//
-// 	return strings.TrimSpace(string(b.Bytes()))
-// }
 
 func usage() {
 	fmt.Println()
