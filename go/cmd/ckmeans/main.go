@@ -100,7 +100,7 @@ func print(f io.Writer, clusters []ckmeans.Cluster) {
 			columns = len(c.Values)
 		}
 	}
-	columns += 2
+	columns += 3
 
 	table := make([][]string, len(clusters))
 	for i := range table {
@@ -110,8 +110,9 @@ func print(f io.Writer, clusters []ckmeans.Cluster) {
 	for i, c := range clusters {
 		table[i][0] = fmt.Sprintf("%d", i+1)
 		table[i][1] = fmt.Sprintf("%v", c.Center)
+		table[i][2] = fmt.Sprintf("%v", c.Variance)
 		for j, v := range c.Values {
-			table[i][j+2] = fmt.Sprintf("%v", v)
+			table[i][j+3] = fmt.Sprintf("%v", v)
 		}
 	}
 
@@ -135,9 +136,11 @@ func print(f io.Writer, clusters []ckmeans.Cluster) {
 		line += "  "
 		line += fmt.Sprintf(formats[1], c.Center)
 		line += "  "
+		line += fmt.Sprintf(formats[2], c.Variance)
+		line += "  "
 		for j, v := range c.Values {
 			line += " "
-			line += fmt.Sprintf(formats[j+2], v)
+			line += fmt.Sprintf(formats[j+3], v)
 		}
 
 		fmt.Fprintf(f, "%s\n", line)

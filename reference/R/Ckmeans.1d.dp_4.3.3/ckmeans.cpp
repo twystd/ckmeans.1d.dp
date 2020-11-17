@@ -11,7 +11,7 @@
 template <int N, int K> struct cluster {
    std::array<int,N>    clusters;
    std::array<double,N> centers;
-   std::array<double,N> withins;
+   std::array<double,N> withinss;
    std::array<double,K> size;
    std::array<double,K> BIC; // TODO check - fixes the segfault but should probably be kMax
 };
@@ -82,7 +82,7 @@ void testTaps() {
      std::map<int, std::vector<double>> beats;
 
      kmeans_1d_dp(taps, 87, NULL, 1, 87,
-                  p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), p.BIC.data(),
+                  p.clusters.data(), p.centers.data(), p.withinss.data(), p.size.data(), p.BIC.data(),
                  "BIC", "linear", L2);
  
      rebase(p);
@@ -105,6 +105,24 @@ void testTaps() {
          // std::copy(std::begin(it->second), std::end(it->second), std::ostream_iterator<double>(std::cout, " "));
          std::cout << std::endl;
      }
+
+     std::cout << "centers:  ";
+     for (int i=0; i<beats.size(); i++) {
+         std::cout << p.centers[i] << " ";  
+     }
+     std::cout << std::endl;
+
+     std::cout << "withinss: ";
+     for (int i=0; i<beats.size(); i++) {
+         std::cout << p.withinss[i] << " ";  
+     }
+     std::cout << std::endl;
+
+     std::cout << "sizes:    ";
+     for (int i=0; i<beats.size(); i++) {
+         std::cout << p.size[i] << " ";  
+     }
+     std::cout << std::endl;
 }
 
 // test_that("Weighted input", {
@@ -117,7 +135,7 @@ void testWeightedInput(const std::string& method) {
        cluster<5,3> q = {{1,2,3,3,3},{-1, 2, 5},{0,0,2},{4,3,3}};
 
        kmeans_1d_dp(data, 5, weights, 3, 3,
-                    p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), p.BIC.data(),
+                    p.clusters.data(), p.centers.data(), p.withinss.data(), p.size.data(), p.BIC.data(),
                     "BIC", method, L2);
  
        rebase(p);
@@ -131,7 +149,7 @@ void testWeightedInput(const std::string& method) {
 //     cluster<6,3> q = {{1,2,2,3,3,3},{-0.9, (1+2.2)/3, (1.9*2+2+2.1)/4},{0,0.00666667,0.0275},{3,3,4}};
 
        kmeans_1d_dp(data, 6, weights, 1, 6,
-                    p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), p.BIC.data(),
+                    p.clusters.data(), p.centers.data(), p.withinss.data(), p.size.data(), p.BIC.data(),
                     "BIC", method, L2);
  
        rebase(p);
@@ -148,7 +166,7 @@ void testGivenK(const std::string& method) {
      cluster<10,3> q = {{1,2,1,2,3,3,3,1,2,1},{-1, 2, 5},{0,0,2},{4,3,3}};
 
      kmeans_1d_dp(data, 10, NULL, 3, 3,
-                  p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), p.BIC.data(),
+                  p.clusters.data(), p.centers.data(), p.withinss.data(), p.size.data(), p.BIC.data(),
                   "BIC", method, L2);
  
      rebase(p);
@@ -171,7 +189,7 @@ void testNlteK(const std::string& method) {
      cluster<4,4> q = {{4, 3, 1, 2},{-5.4, 0.1, 2, 3},{0, 0, 0, 0},{1, 1, 1, 1}};
 
      kmeans_1d_dp(data, 4, NULL, 4, 4,
-                  p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), p.BIC.data(),
+                  p.clusters.data(), p.centers.data(), p.withinss.data(), p.size.data(), p.BIC.data(),
                   "BIC", method, L2);
  
      rebase(p);
@@ -187,7 +205,7 @@ void testKeq2(const std::string& method) {
      cluster<10,2> q = {{1, 1, 1, 1, 1, 2, 2, 2, 2, 2},{3,8},{10,10},{5,5}};
 
      kmeans_1d_dp(data, 10, NULL, 2, 2,
-                  p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), p.BIC.data(),
+                  p.clusters.data(), p.centers.data(), p.withinss.data(), p.size.data(), p.BIC.data(),
                   "BIC", method, L2);
  
      rebase(p);
@@ -204,7 +222,7 @@ void testKeq1(const std::string& method) {
        cluster<4,1> q = {{1,1,1,1}, {-2.5}, {0}, {4}};
 
        kmeans_1d_dp(data, 4, NULL, 1, 1,
-                    p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), p.BIC.data(),
+                    p.clusters.data(), p.centers.data(), p.withinss.data(), p.size.data(), p.BIC.data(),
                     "BIC" ,method, L2);
 
        rebase(p);
@@ -226,7 +244,7 @@ void testKeq1(const std::string& method) {
        }
   
        kmeans_1d_dp(data, 100, NULL, 1, 1,
-                    p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), p.BIC.data(),
+                    p.clusters.data(), p.centers.data(), p.withinss.data(), p.size.data(), p.BIC.data(),
                     "BIC", method, L2);
    
        if (p.size != q.size) {
@@ -250,7 +268,7 @@ void testN10K3(const std::string& method) {
      cluster<10,3> q = {{3, 3, 3, 3, 1, 1, 1, 2, 2, 2},{1, 2, 3},{0, 0, 0},{3, 3, 4}};
 
      kmeans_1d_dp(data, 10, NULL, 3, 3,
-                  p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), p.BIC.data(),
+                  p.clusters.data(), p.centers.data(), p.withinss.data(), p.size.data(), p.BIC.data(),
                   "BIC", method, L2);
  
      rebase(p);
@@ -269,7 +287,7 @@ void testN14K8(const std::string& method) {
                         {3, 2, 4, 1, 1, 1, 1, 1}};
 
      kmeans_1d_dp(data, 14, NULL, 8, 8,
-                  p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), p.BIC.data(),
+                  p.clusters.data(), p.centers.data(), p.withinss.data(), p.size.data(), p.BIC.data(),
                   "BIC", method, L2);
  
      rebase(p);
@@ -285,7 +303,7 @@ void testEstimateKExampleSet1(const std::string& method) {
        cluster<6,6> q = {{1,1,1,2,2,2},{1,2},{0.02,0.02},{3,3}};
 
        kmeans_1d_dp(data, 6, NULL, 1, 6,
-                    p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), p.BIC.data(),
+                    p.clusters.data(), p.centers.data(), p.withinss.data(), p.size.data(), p.BIC.data(),
                     "BIC", method, L2);
  
        rebase(p);
@@ -297,7 +315,7 @@ void testEstimateKExampleSet1(const std::string& method) {
        cluster<6,6> q = {{2,2,2,1,1,1},{1,2},{0.02,0.02},{3,3}};
 
        kmeans_1d_dp(data, 6, NULL, 1, 6,
-                    p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), p.BIC.data(),
+                    p.clusters.data(), p.centers.data(), p.withinss.data(), p.size.data(), p.BIC.data(),
                     "BIC", method, L2);
  
        rebase(p);
@@ -309,7 +327,7 @@ void testEstimateKExampleSet1(const std::string& method) {
        cluster<6,6> q = {{2,2,2,1,1,1},{1,2},{0.02,0.02},{3,3}};
 
        kmeans_1d_dp(data, 6, NULL, 1, 10,
-                    p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), p.BIC.data(),
+                    p.clusters.data(), p.centers.data(), p.withinss.data(), p.size.data(), p.BIC.data(),
                     "BIC", method, L2);
 
        rebase(p);
@@ -326,7 +344,7 @@ void testEstimateKExampleSet2(const std::string& method) {
      cluster<10,3> q = {{3, 3, 3, 3, 1, 1, 1, 2, 2, 2},{0.933333333333, 2.066666666667, 3.475},{0.0466666666667, 0.0466666666667, 0.2075},{3, 3, 4}};
 
      kmeans_1d_dp(data, 10, NULL, 2, 5,
-                  p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), p.BIC.data(),
+                  p.clusters.data(), p.centers.data(), p.withinss.data(), p.size.data(), p.BIC.data(),
                   "BIC", method, L2);
  
      rebase(p);
@@ -348,7 +366,7 @@ void testEstimateKExampleSet3(const std::string& method) {
      cluster<21,2> q = {{1,1,1,2,2,2,1,1,1,2,2,2,1,1,1,2,2,2,1,1,1}, {-0.6592474631, 0.6751193405},{1.0564793100, 0.6232976959},{12,9}};
 
      kmeans_1d_dp(data, 21, NULL, 1, 21,
-                  p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), p.BIC.data(),
+                  p.clusters.data(), p.centers.data(), p.withinss.data(), p.size.data(), p.BIC.data(),
                   "BIC", method, L2);
  
      rebase(p);
@@ -371,7 +389,7 @@ void testEstimateKExampleSet4(const std::string& method) {
      cluster<19,3> q = {{3,3,3,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1}, {0.01702193495, 0.15342151455, 0.32441508262},{0.006126754998,0.004977009034,0.004883305120},{13,3,3}};
 
      kmeans_1d_dp(data, 19, NULL, 1, 19,
-                  p.clusters.data(), p.centers.data(), p.withins.data(), p.size.data(), p.BIC.data(),
+                  p.clusters.data(), p.centers.data(), p.withinss.data(), p.size.data(), p.BIC.data(),
                   "BIC", method, L2);
  
      rebase(p);
@@ -412,17 +430,17 @@ template <int N, int K> void compare(cluster<N,K>& p, cluster<N,K>& q) {
         }
      }
 
-     if (p.withins != q.withins) {
+     if (p.withinss != q.withinss) {
         for (int i=0; i<K; i++) {
-            double d = abs(p.withins[i] - q.withins[i]);
+            double d = abs(p.withinss[i] - q.withinss[i]);
 
             if (d > 0.00001) {
                std::cout << "     returned invalid withins" << std::endl;
                std::cout << "       expected: [ ";
-               std::copy(std::begin(q.withins), std::end(q.withins), std::ostream_iterator<double>(std::cout, " "));
+               std::copy(std::begin(q.withinss), std::end(q.withinss), std::ostream_iterator<double>(std::cout, " "));
                std::cout << "]" << std::endl;
                std::cout << "       got:      [ ";
-               std::copy(std::begin(p.withins), std::end(p.withins), std::ostream_iterator<double>(std::cout, " "));
+               std::copy(std::begin(p.withinss), std::end(p.withinss), std::ostream_iterator<double>(std::cout, " "));
                std::cout << "]" << std::endl;
                break;
             }

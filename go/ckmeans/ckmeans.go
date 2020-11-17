@@ -57,21 +57,17 @@ func CKMeans1dDp(data, weights []float64) []Cluster {
 
 	}
 
-	k, clusters := ckmeans(x, w, kmin, kmax)
+	k, clusters, centers, variance := ckmeans(x, w, kmin, kmax)
 	index := make([]int, len(x))
 	for i := range clusters {
 		index[order[i]] = clusters[i]
 	}
 
-	// TODO inline this to avoid redundant data shuffling
-	centers := centers(data, weights, k, index)
-	withinss := withinss(data, weights, k, index)
-
 	clustered := make([]Cluster, k)
 
 	for i := 0; i < k; i++ {
 		clustered[i].Center = centers[i]
-		clustered[i].Variance = withinss[i]
+		clustered[i].Variance = variance[i]
 	}
 
 	for i, ix := range index {
@@ -81,7 +77,7 @@ func CKMeans1dDp(data, weights []float64) []Cluster {
 	return clustered
 }
 
-func ckmeans(x, w []float64, kmin, kmax int) (int, []int) {
+func ckmeans(x, w []float64, kmin, kmax int) (int, []int, []float64, []float64) {
 	N := len(x)
 	S := make([][]float64, kmax)
 	J := make([][]int, kmax)
@@ -100,9 +96,29 @@ func ckmeans(x, w []float64, kmin, kmax int) (int, []int) {
 		J = J[0:kopt]
 	}
 
-	cluster_sorted := make([]int, N)
-	size := make([]float64, kmax)
-	backtrackWeightedX(x, w, J, cluster_sorted, size)
+	clusters := backtrackWeightedX(x, w, J)
 
-	return kopt, cluster_sorted
+	// ... calulate mean and variance
+
+	centers := make([]float64, kopt)
+	withinss := make([]float64, kopt)
+	sum := make([]float64, kopt)
+	sumw := make([]float64, kopt)
+
+	for i := range x {
+		ix := clusters[i]
+		sum[ix] += x[i] * w[i]
+		sumw[ix] += w[i]
+	}
+
+	for i := 0; i < kopt; i++ {
+		centers[i] = sum[i] / sumw[i]
+	}
+
+	for i := range x {
+		ix := clusters[i]
+		withinss[ix] += w[i] * (x[i] - centers[ix]) * (x[i] - centers[ix])
+	}
+
+	return kopt, clusters, centers, withinss
 }

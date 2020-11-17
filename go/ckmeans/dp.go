@@ -65,42 +65,26 @@ func backtrackWeighted(x, y []float64, J [][]int, counts []int, weights []float6
 	}
 }
 
-func backtrackWeightedX(x, y []float64, J [][]int, cluster []int, weights []float64) {
+func backtrackWeightedX(x, y []float64, J [][]int) []int {
 	K := len(J)
 	N := len(J[0])
+	clusters := make([]int, N)
+
 	cluster_right := N - 1
 
-	centers := make([]float64, K)  // TODO remove once withinss etc have been extracted
-	withinss := make([]float64, K) // TODO remove once withinss etc have been extracted
-
-	// Backtrack the clusters from the dynamic programming matrix
 	for k := K - 1; k >= 0; k-- {
 		cluster_left := J[k][cluster_right]
 
 		for i := cluster_left; i <= cluster_right; i++ {
-			cluster[i] = k
+			clusters[i] = k
 		}
-
-		sum := 0.0
-		weight := 0.0
-
-		for i := cluster_left; i <= cluster_right; i++ {
-			sum += x[i] * y[i]
-			weight += y[i]
-		}
-
-		centers[k] = sum / weight
-
-		for i := cluster_left; i <= cluster_right; i++ {
-			withinss[k] += y[i] * (x[i] - centers[k]) * (x[i] - centers[k])
-		}
-
-		weights[k] = weight
 
 		if k > 0 {
 			cluster_right = cluster_left - 1
 		}
 	}
+
+	return clusters
 }
 
 func dissimilarity(j, i int, sum_x, sum_x_sq, sum_w, sum_w_sq []float64) float64 {
