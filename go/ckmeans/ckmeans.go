@@ -101,6 +101,8 @@ func ckmeans(x, w []float64, kmin, kmax int) (int, []int, []float64, []float64) 
 	// ... calulate mean and variance
 
 	centers := make([]float64, kopt)
+	variance := make([]float64, kopt)
+	count := make([]int, kopt)
 	withinss := make([]float64, kopt)
 	sum := make([]float64, kopt)
 	sumw := make([]float64, kopt)
@@ -118,7 +120,16 @@ func ckmeans(x, w []float64, kmin, kmax int) (int, []int, []float64, []float64) 
 	for i := range x {
 		ix := clusters[i]
 		withinss[ix] += w[i] * (x[i] - centers[ix]) * (x[i] - centers[ix])
+		count[ix] += 1
 	}
 
-	return kopt, clusters, centers, withinss
+	for i := 0; i < kopt; i++ {
+		if count[i] > 1 {
+			variance[i] = withinss[i] / float64(count[i]-1)
+		} else {
+			variance[i] = 0
+		}
+	}
+
+	return kopt, clusters, centers, variance
 }
