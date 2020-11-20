@@ -119,7 +119,7 @@ func ckmeans(x, w []float64, kmin, kmax int) (int, []int, []float64, []float64) 
 
 	for i := range x {
 		ix := clusters[i]
-		withinss[ix] += w[i] * (x[i] - centers[ix]) * (x[i] - centers[ix])
+		withinss[ix] += w[i] * (x[i]*x[i] - 2*x[i]*centers[ix] + centers[ix]*centers[ix])
 		count[ix] += 1
 	}
 
