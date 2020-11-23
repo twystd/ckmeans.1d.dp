@@ -1,6 +1,6 @@
 package ckmeans
 
-func fill_row_q_SMAWK(imin, imax, q int, S [][]float64, J [][]int, sum_x, sum_x_sq, sum_w, sum_w_sq []float64) {
+func fill_row_q_SMAWK(imin, imax, q int, S [][]float64, J [][]int, sum_x, sum_x_sq, sum_w, sum_w_sq []float64, criterion Criterion) {
 	js := make([]int, imax-q+1)
 	abs := q
 
@@ -9,34 +9,34 @@ func fill_row_q_SMAWK(imin, imax, q int, S [][]float64, J [][]int, sum_x, sum_x_
 		abs++
 	}
 
-	SMAWK(imin, imax, 1, q, js, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq)
+	SMAWK(imin, imax, 1, q, js, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq, criterion)
 }
 
-func SMAWK(imin, imax, istep, q int, js []int, S [][]float64, J [][]int, sum_x, sum_x_sq, sum_w, sum_w_sq []float64) {
+func SMAWK(imin, imax, istep, q int, js []int, S [][]float64, J [][]int, sum_x, sum_x_sq, sum_w, sum_w_sq []float64, criterion Criterion) {
 	if imax-imin <= 0*istep {
-		find_min_from_candidates(imin, imax, istep, q, js, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq)
+		find_min_from_candidates(imin, imax, istep, q, js, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq, criterion)
 	} else {
 		js_odd := make([]int, len(js))
 
-		reduce_in_place(imin, imax, istep, q, js, js_odd, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq)
+		reduce_in_place(imin, imax, istep, q, js, js_odd, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq, criterion)
 
 		istepx2 := istep << 1
 		imin_odd := imin + istep
 		imax_odd := imin_odd + (imax-imin_odd)/istepx2*istepx2
 
-		SMAWK(imin_odd, imax_odd, istepx2, q, js_odd, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq)
+		SMAWK(imin_odd, imax_odd, istepx2, q, js_odd, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq, criterion)
 
-		fill_even_positions(imin, imax, istep, q, js, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq)
+		fill_even_positions(imin, imax, istep, q, js, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq, criterion)
 	}
 }
 
-func find_min_from_candidates(imin, imax, istep, q int, js []int, S [][]float64, J [][]int, sum_x, sum_x_sq, sum_w, sum_w_sq []float64) {
+func find_min_from_candidates(imin, imax, istep, q int, js []int, S [][]float64, J [][]int, sum_x, sum_x_sq, sum_w, sum_w_sq []float64, criterion Criterion) {
 	rmin_prev := 0
 
 	for i := imin; i <= imax; i += istep {
 		rmin := rmin_prev
 
-		S[q][i] = S[q-1][js[rmin]-1] + dissimilarity(js[rmin], i, sum_x, sum_x_sq, sum_w, sum_w_sq)
+		S[q][i] = S[q-1][js[rmin]-1] + criterion.Dissimilarity(js[rmin], i, sum_x, sum_x_sq, sum_w, sum_w_sq)
 		J[q][i] = js[rmin]
 
 		for r := (rmin + 1); r < len(js); r++ {
@@ -49,7 +49,7 @@ func find_min_from_candidates(imin, imax, istep, q int, js []int, S [][]float64,
 				break
 			}
 
-			Sj := (S[q-1][j_abs-1] + dissimilarity(j_abs, i, sum_x, sum_x_sq, sum_w, sum_w_sq))
+			Sj := (S[q-1][j_abs-1] + criterion.Dissimilarity(j_abs, i, sum_x, sum_x_sq, sum_w, sum_w_sq))
 			if Sj <= S[q][i] {
 				S[q][i] = Sj
 				J[q][i] = js[r]
@@ -59,7 +59,7 @@ func find_min_from_candidates(imin, imax, istep, q int, js []int, S [][]float64,
 	}
 }
 
-func reduce_in_place(imin, imax, istep, q int, js, js_red []int, S [][]float64, J [][]int, sum_x, sum_x_sq, sum_w, sum_w_sq []float64) {
+func reduce_in_place(imin, imax, istep, q int, js, js_red []int, S [][]float64, J [][]int, sum_x, sum_x_sq, sum_w, sum_w_sq []float64, criterion Criterion) {
 	N := (imax-imin)/istep + 1
 
 	copy(js_red, js)
@@ -79,10 +79,10 @@ func reduce_in_place(imin, imax, istep, q int, js, js_red []int, S [][]float64, 
 
 		i := imin + p*istep
 		j := js_red[right]
-		Sl := S[q-1][j-1] + dissimilarity(j, i, sum_x, sum_x_sq, sum_w, sum_w_sq)
+		Sl := S[q-1][j-1] + criterion.Dissimilarity(j, i, sum_x, sum_x_sq, sum_w, sum_w_sq)
 
 		jplus1 := js_red[right+1]
-		Slplus1 := S[q-1][jplus1-1] + dissimilarity(jplus1, i, sum_x, sum_x_sq, sum_w, sum_w_sq)
+		Slplus1 := S[q-1][jplus1-1] + criterion.Dissimilarity(jplus1, i, sum_x, sum_x_sq, sum_w, sum_w_sq)
 
 		if Sl < Slplus1 && p < N-1 {
 			left++
@@ -113,7 +113,7 @@ func reduce_in_place(imin, imax, istep, q int, js, js_red []int, S [][]float64, 
 	js_red = tmp
 }
 
-func fill_even_positions(imin, imax, istep, q int, js []int, S [][]float64, J [][]int, sum_x, sum_x_sq, sum_w, sum_w_sq []float64) {
+func fill_even_positions(imin, imax, istep, q int, js []int, S [][]float64, J [][]int, sum_x, sum_x_sq, sum_w, sum_w_sq []float64, criterion Criterion) {
 	n := len(js)
 	istepx2 := istep << 1
 	jl := js[0]
@@ -124,7 +124,7 @@ func fill_even_positions(imin, imax, istep, q int, js []int, S [][]float64, J []
 			r++
 		}
 
-		S[q][i] = S[q-1][js[r]-1] + dissimilarity(js[r], i, sum_x, sum_x_sq, sum_w, sum_w_sq)
+		S[q][i] = S[q-1][js[r]-1] + criterion.Dissimilarity(js[r], i, sum_x, sum_x_sq, sum_w, sum_w_sq)
 		J[q][i] = js[r]
 
 		// Look for minimum S upto jmax within js
@@ -141,7 +141,7 @@ func fill_even_positions(imin, imax, istep, q int, js []int, S [][]float64, J []
 			jmax = i
 		}
 
-		sjimin := dissimilarity(jmax, i, sum_x, sum_x_sq, sum_w, sum_w_sq)
+		sjimin := criterion.Dissimilarity(jmax, i, sum_x, sum_x_sq, sum_w, sum_w_sq)
 
 		r++
 		for ; r < n && js[r] <= jmax; r++ {
@@ -155,7 +155,7 @@ func fill_even_positions(imin, imax, istep, q int, js []int, S [][]float64, J []
 				continue
 			}
 
-			s := dissimilarity(jabs, i, sum_x, sum_x_sq, sum_w, sum_w_sq)
+			s := criterion.Dissimilarity(jabs, i, sum_x, sum_x_sq, sum_w, sum_w_sq)
 			Sj := S[q-1][jabs-1] + s
 
 			if Sj <= S[q][i] {

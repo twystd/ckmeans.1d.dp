@@ -4,6 +4,10 @@ import (
 	"sort"
 )
 
+type Criterion interface {
+	Dissimilarity(j, i int, sum_x, sum_x_sq, sum_w, sum_w_sq []float64) float64
+}
+
 type Cluster struct {
 	Center   float64
 	Variance float64
@@ -78,6 +82,7 @@ func CKMeans1dDp(data, weights []float64) []Cluster {
 }
 
 func ckmeans(x, w []float64, kmin, kmax int) (int, []int, []float64, []float64) {
+	criterion := L2{}
 	N := len(x)
 	S := make([][]float64, kmax)
 	J := make([][]int, kmax)
@@ -87,7 +92,7 @@ func ckmeans(x, w []float64, kmin, kmax int) (int, []int, []float64, []float64) 
 		J[i] = make([]int, N)
 	}
 
-	fill_dp_matrix(x, w, S, J)
+	fill_dp_matrix(x, w, S, J, &criterion)
 
 	bic := make([]float64, kmax)
 	kopt := select_levels_weighted(x, w, J, kmin, kmax, bic)
