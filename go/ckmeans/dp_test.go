@@ -7,7 +7,7 @@ import (
 )
 
 func TestFillDPMatrix(t *testing.T) {
-	l2 := L2{}
+	smawk := SMAWK{&L2{}}
 	x := []float64{-0.9, 1.0, 1.1, 1.9, 2.0, 2.1}
 	w := []float64{3.0, 1.0, 2.0, 2.0, 1.0, 1.0}
 
@@ -20,7 +20,7 @@ func TestFillDPMatrix(t *testing.T) {
 		J[i] = make([]int, N)
 	}
 
-	fill_dp_matrix(x, w, S, J, &l2)
+	fill_dp_matrix(x, w, S, J, smawk)
 
 	s := [][]float64{
 		{0.0, 2.7075, 5.80833, 10.75875, 12.6570, 14.42400},

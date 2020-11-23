@@ -82,7 +82,10 @@ func CKMeans1dDp(data, weights []float64) []Cluster {
 }
 
 func ckmeans(x, w []float64, kmin, kmax int) (int, []int, []float64, []float64) {
-	criterion := L2{}
+	smawk := SMAWK{
+		criterionx: &L2{},
+	}
+
 	N := len(x)
 	S := make([][]float64, kmax)
 	J := make([][]int, kmax)
@@ -92,7 +95,7 @@ func ckmeans(x, w []float64, kmin, kmax int) (int, []int, []float64, []float64) 
 		J[i] = make([]int, N)
 	}
 
-	fill_dp_matrix(x, w, S, J, &criterion)
+	fill_dp_matrix(x, w, S, J, smawk)
 
 	bic := make([]float64, kmax)
 	kopt := select_levels_weighted(x, w, J, kmin, kmax, bic)

@@ -1,6 +1,6 @@
 package ckmeans
 
-func fill_dp_matrix(x, w []float64, S [][]float64, J [][]int, criterion Criterion) {
+func fill_dp_matrix(x, w []float64, S [][]float64, J [][]int, smawk SMAWK) {
 	K := len(S)
 	N := len(S[0])
 
@@ -27,7 +27,9 @@ func fill_dp_matrix(x, w []float64, S [][]float64, J [][]int, criterion Criterio
 		sum_w[i] = sum_w[i-1] + w[i]
 		sum_w_sq[i] = sum_w_sq[i-1] + w[i]*w[i]
 
-		S[0][i] = criterion.Dissimilarity(0, i, sum_x, sum_x_sq, sum_w, sum_w_sq)
+		// NOTE: using same dissimilarity as SMAWK - original algorithm potentially (but not really) allowed for alternative criterion here
+        //       i.e. not convinced embedding criterion in SMAWK is all that correct
+		S[0][i] = smawk.dissimilarity(0, i, sum_x, sum_x_sq, sum_w, sum_w_sq) 
 		J[0][i] = 0
 	}
 
@@ -42,7 +44,7 @@ func fill_dp_matrix(x, w []float64, S [][]float64, J [][]int, criterion Criterio
 			imin = N - 1
 		}
 
-		fill_row_q_SMAWK(imin, N-1, q, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq, criterion)
+		smawk.fill_row_q_SMAWK(imin, N-1, q, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq)
 	}
 }
 
