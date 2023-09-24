@@ -19,9 +19,6 @@ debug: build
 test: build
 	go test ./...
 
-run: build
-	./bin/ckmeans --debug ../test/taps.txt
-
 integration-tests: build
 	mkdir -p ../test/tmp
 	rm -f ../test/tmp/*
@@ -40,4 +37,9 @@ benchmark: build
 coverage: build
 	go test -cover ./...
 
+run: build
+	./bin/ckmeans --debug ../test/taps.txt
+
+dawq: build
+	./bin/dawq --debug --out ../test/tmp/clocks.clusters ../test/clocks.tsv
 
