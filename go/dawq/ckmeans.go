@@ -1,0 +1,160 @@
+package dawq
+
+import (
+	"sort"
+)
+
+type Record struct {
+	OID string
+	At  float64
+}
+
+type Criterion interface {
+	Dissimilarity(j, i int, sum_x, sum_x_sq, sum_w, sum_w_sq []float64) float64
+}
+
+type Cluster struct {
+	Center   float64
+	Variance float64
+	Values   []Record
+}
+
+func CKMeans1dDp(data []Record, weights []float64, krange ...int) []Cluster {
+	// validate inputs
+	if data == nil || len(data) == 0 {
+		return []Cluster{}
+	}
+
+	if weights != nil && len(weights) != len(data) {
+		panic("Invalid weights")
+	}
+
+	// sort and order data
+	x := make([]Record, len(data))
+	w := make([]float64, len(data))
+	order := make([]int, len(data))
+
+	for i := range order {
+		order[i] = i
+	}
+
+	sort.SliceStable(order, func(i, j int) bool { return data[order[i]].At < data[order[j]].At })
+
+	if weights == nil {
+		for i := range data {
+			x[i] = data[order[i]]
+			w[i] = 1.0
+		}
+	} else {
+		for i := range data {
+			x[i] = data[order[i]]
+			w[i] = weights[order[i]]
+		}
+	}
+
+	// calculate range of K
+	// TODO: should this include weights??
+	kmin := 1
+	kmax := 1
+
+	p := x[0]
+	for _, q := range x[1:] {
+		if q != p {
+			kmax++
+			q = p
+		}
+
+	}
+
+	if len(krange) > 0 {
+		kmin = krange[0]
+	}
+
+	if len(krange) > 1 && krange[1] < kmax {
+		kmax = krange[1]
+	}
+
+	if kmin != 1 && kmin > kmax {
+		kmin = kmax
+	}
+
+	k, clusters, centers, variance := ckmeans(x, w, kmin, kmax)
+	index := make([]int, len(x))
+	for i := range clusters {
+		index[order[i]] = clusters[i]
+	}
+
+	clustered := make([]Cluster, k)
+
+	for i := 0; i < k; i++ {
+		clustered[i].Center = centers[i]
+		clustered[i].Variance = variance[i]
+	}
+
+	for i, ix := range index {
+		clustered[ix].Values = append(clustered[ix].Values, data[i])
+	}
+
+	return clustered
+}
+
+func ckmeans(x []Record, w []float64, kmin, kmax int) (int, []int, []float64, []float64) {
+	smawk := SMAWK{
+		criterionx: &L2{},
+	}
+
+	N := len(x)
+	S := make([][]float64, kmax)
+	J := make([][]int, kmax)
+
+	for i := range S {
+		S[i] = make([]float64, N)
+		J[i] = make([]int, N)
+	}
+
+	fill_dp_matrix(x, w, S, J, smawk)
+
+	bic := make([]float64, kmax)
+	kopt := select_levels_weighted(x, w, J, kmin, kmax, bic)
+
+	if kopt < kmax {
+		J = J[0:kopt]
+	}
+
+	clusters := backtrackWeightedX(x, w, J)
+
+	// ... calulate mean and variance
+
+	centers := make([]float64, kopt)
+	variance := make([]float64, kopt)
+	count := make([]int, kopt)
+	withinss := make([]float64, kopt)
+	sum := make([]float64, kopt)
+	sumw := make([]float64, kopt)
+
+	for i := range x {
+		ix := clusters[i]
+		sum[ix] += x[i].At * w[i]
+		sumw[ix] += w[i]
+	}
+
+	for i := 0; i < kopt; i++ {
+		centers[i] = sum[i] / sumw[i]
+	}
+
+	for i := range x {
+		ix := clusters[i]
+		withinss[ix] += w[i] * (x[i].At*x[i].At - 2*x[i].At*centers[ix] + centers[ix]*centers[ix])
+		count[ix] += 1
+	}
+
+	for i := 0; i < kopt; i++ {
+		if count[i] > 1 {
+			variance[i] = withinss[i] / float64(count[i]-1)
+		} else {
+			variance[i] = 0
+		}
+	}
+
+	return kopt, clusters, centers, variance
+}
