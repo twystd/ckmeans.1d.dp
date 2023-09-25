@@ -1,6 +1,6 @@
 package dawq
 
-func fill_dp_matrix(x []Record, w []float64, S [][]float64, J [][]int, smawk SMAWK) {
+func fill_dp_matrix(x []float64, w []float64, S [][]float64, J [][]int, smawk SMAWK) {
 	K := len(S)
 	N := len(S[0])
 
@@ -11,10 +11,10 @@ func fill_dp_matrix(x []Record, w []float64, S [][]float64, J [][]int, smawk SMA
 
 	// 	//jseq := []int{}
 
-	shift := x[N/2].At // median. used to shift the values of x to improve numerical stability
+	shift := x[N/2] // median. used to shift the values of x to improve numerical stability
 
-	sum_x[0] = w[0] * (x[0].At - shift)
-	sum_x_sq[0] = w[0] * (x[0].At - shift) * (x[0].At - shift)
+	sum_x[0] = w[0] * (x[0] - shift)
+	sum_x_sq[0] = w[0] * (x[0] - shift) * (x[0] - shift)
 	sum_w[0] = w[0]
 	sum_w_sq[0] = w[0] * w[0]
 
@@ -22,8 +22,8 @@ func fill_dp_matrix(x []Record, w []float64, S [][]float64, J [][]int, smawk SMA
 	J[0][0] = 0
 
 	for i := 1; i < N; i++ {
-		sum_x[i] = sum_x[i-1] + w[i]*(x[i].At-shift)
-		sum_x_sq[i] = sum_x_sq[i-1] + w[i]*(x[i].At-shift)*(x[i].At-shift)
+		sum_x[i] = sum_x[i-1] + w[i]*(x[i]-shift)
+		sum_x_sq[i] = sum_x_sq[i-1] + w[i]*(x[i]-shift)*(x[i]-shift)
 		sum_w[i] = sum_w[i-1] + w[i]
 		sum_w_sq[i] = sum_w_sq[i-1] + w[i]*w[i]
 
@@ -48,7 +48,7 @@ func fill_dp_matrix(x []Record, w []float64, S [][]float64, J [][]int, smawk SMA
 	}
 }
 
-func backtrackWeighted(x []Record, y []float64, J [][]int, counts []int, weights []float64, K int) {
+func backtrackWeighted(x []float64, y []float64, J [][]int, counts []int, weights []float64, K int) {
 	N := len(J[0])
 	cluster_right := N - 1
 
@@ -67,7 +67,7 @@ func backtrackWeighted(x []Record, y []float64, J [][]int, counts []int, weights
 	}
 }
 
-func backtrackWeightedX(x []Record, y []float64, J [][]int) []int {
+func backtrackWeightedX(x []float64, y []float64, J [][]int) []int {
 	K := len(J)
 	N := len(J[0])
 	clusters := make([]int, N)

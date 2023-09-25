@@ -11,10 +11,10 @@ type Criterion interface {
 type Cluster struct {
 	Center   float64
 	Variance float64
-	Values   []float64
+	Values   []any
 }
 
-func CKMeans1dDp(data, weights []float64) []Cluster {
+func CKMeans1dDp(data []any, weights []float64, f func(v any) float64, krange ...int) []Cluster {
 	// validate inputs
 	if data == nil || len(data) == 0 {
 		return []Cluster{}
@@ -33,16 +33,16 @@ func CKMeans1dDp(data, weights []float64) []Cluster {
 		order[i] = i
 	}
 
-	sort.SliceStable(order, func(i, j int) bool { return data[order[i]] < data[order[j]] })
+	sort.SliceStable(order, func(i, j int) bool { return f(data[order[i]]) < f(data[order[j]]) })
 
 	if weights == nil {
 		for i := range data {
-			x[i] = data[order[i]]
+			x[i] = f(data[order[i]])
 			w[i] = 1.0
 		}
 	} else {
 		for i := range data {
-			x[i] = data[order[i]]
+			x[i] = f(data[order[i]])
 			w[i] = weights[order[i]]
 		}
 	}
@@ -58,7 +58,18 @@ func CKMeans1dDp(data, weights []float64) []Cluster {
 			kmax++
 			q = p
 		}
+	}
 
+	if len(krange) > 0 {
+		kmin = krange[0]
+	}
+
+	if len(krange) > 1 && krange[1] < kmax {
+		kmax = krange[1]
+	}
+
+	if kmin != 1 && kmin > kmax {
+		kmin = kmax
 	}
 
 	k, clusters, centers, variance := ckmeans(x, w, kmin, kmax)
