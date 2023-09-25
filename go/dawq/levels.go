@@ -4,7 +4,7 @@ import (
 	"math"
 )
 
-func select_levels_weighted(x []Record, y []float64, J [][]int, Kmin, Kmax int, bic []float64) int {
+func select_levels_weighted(x []float64, y []float64, J [][]int, Kmin, Kmax int, bic []float64) int {
 	N := len(x)
 
 	if Kmin > Kmax || N < 2 {
@@ -45,14 +45,14 @@ func select_levels_weighted(x []Record, y []float64, J [][]int, Kmin, Kmax int, 
 				var dmin float64
 
 				if indexLeft > 0 && indexRight < N-1 {
-					dmin = x[indexLeft].At - x[indexLeft-1].At
-					if dmin > (x[indexRight+1].At - x[indexRight].At) {
-						dmin = x[indexRight+1].At - x[indexRight].At
+					dmin = x[indexLeft] - x[indexLeft-1]
+					if dmin > (x[indexRight+1] - x[indexRight]) {
+						dmin = x[indexRight+1] - x[indexRight]
 					}
 				} else if indexLeft > 0 {
-					dmin = x[indexLeft].At - x[indexLeft-1].At
+					dmin = x[indexLeft] - x[indexLeft-1]
 				} else {
-					dmin = x[indexRight+1].At - x[indexRight].At
+					dmin = x[indexRight+1] - x[indexRight]
 				}
 
 				if sigma2[k] == 0 {
@@ -73,7 +73,7 @@ func select_levels_weighted(x []Record, y []float64, J [][]int, Kmin, Kmax int, 
 		for i := 0; i < N; i++ {
 			L := 0.0
 			for k := 0; k < K; k++ {
-				L += coeff[k] * math.Exp(-(x[i].At-mu[k])*(x[i].At-mu[k])/(2.0*sigma2[k]))
+				L += coeff[k] * math.Exp(-(x[i]-mu[k])*(x[i]-mu[k])/(2.0*sigma2[k]))
 			}
 
 			loglikelihood += y[i] * math.Log(L)
@@ -98,7 +98,7 @@ func select_levels_weighted(x []Record, y []float64, J [][]int, Kmin, Kmax int, 
 	return Kopt
 }
 
-func shiftedDataVarianceWeighted(x []Record, y []float64, total_weight float64, left, right int) (float64, float64) {
+func shiftedDataVarianceWeighted(x []float64, y []float64, total_weight float64, left, right int) (float64, float64) {
 	sum := 0.0
 	sumsq := 0.0
 
@@ -109,11 +109,11 @@ func shiftedDataVarianceWeighted(x []Record, y []float64, total_weight float64, 
 
 	if right >= left {
 
-		median := x[(left+right)/2].At
+		median := x[(left+right)/2]
 
 		for i := left; i <= right; i++ {
-			sum += (x[i].At - median) * y[i]
-			sumsq += (x[i].At - median) * (x[i].At - median) * y[i]
+			sum += (x[i] - median) * y[i]
+			sumsq += (x[i] - median) * (x[i] - median) * y[i]
 		}
 		mean = sum/total_weight + median
 

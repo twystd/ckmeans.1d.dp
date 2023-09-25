@@ -52,7 +52,7 @@ func main() {
 		fmt.Printf("  ... %v values read from %s\n", len(data), file)
 	}
 
-	clusters := ckmeans.CKMeans1dDp(data, nil)
+	clusters := ckmeans.CKMeans1dDp(data, nil, func(v any) float64 { return v.(float64) })
 
 	if options.debug {
 		fmt.Printf("  ... %v clusters\n", len(clusters))
@@ -71,13 +71,13 @@ func main() {
 	}
 }
 
-func read(f string) ([]float64, error) {
+func read(f string) ([]any, error) {
 	b, err := ioutil.ReadFile(f)
 	if err != nil {
 		return nil, err
 	}
 
-	data := []float64{}
+	data := []any{}
 	tokens := regexp.MustCompile(`\s+`).Split(string(b), -1)
 
 	for _, t := range tokens {

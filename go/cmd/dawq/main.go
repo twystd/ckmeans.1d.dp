@@ -9,7 +9,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/twystd/ckmeans.1d.dp/go/dawq"
+	"github.com/twystd/ckmeans.1d.dp/go/ckmeans"
 )
 
 const VERSION = "v0.0.0"
@@ -20,6 +20,11 @@ var options = struct {
 }{
 	outfile: "",
 	debug:   false,
+}
+
+type record struct {
+	OID string
+	At  float64
 }
 
 func main() {
@@ -51,7 +56,7 @@ func main() {
 		fmt.Printf("  ... %v records read from %s\n", len(data), file)
 	}
 
-	clusters := dawq.CKMeans1dDp(data, nil, 1033, 1033)
+	clusters := ckmeans.CKMeans1dDp(data, nil, func(v any) float64 { return v.(record).At }, 1033, 1033)
 
 	if options.debug {
 		fmt.Printf("  ... %v clusters\n", len(clusters))
@@ -70,8 +75,8 @@ func main() {
 	}
 }
 
-func read(f string) ([]dawq.Record, error) {
-	data := []dawq.Record{}
+func read(f string) ([]any, error) {
+	data := []any{}
 
 	b, err := os.ReadFile(f)
 	if err != nil {
@@ -94,7 +99,7 @@ func read(f string) ([]dawq.Record, error) {
 			if at, err := strconv.ParseFloat(row[1], 64); err != nil {
 				fmt.Printf("   ... discarding row %v\n", row)
 			} else {
-				data = append(data, dawq.Record{
+				data = append(data, record{
 					OID: oid,
 					At:  at,
 				})
@@ -107,13 +112,14 @@ func read(f string) ([]dawq.Record, error) {
 	return data, nil
 }
 
-func print(f io.Writer, clusters []dawq.Cluster) {
+func print(f io.Writer, clusters []ckmeans.Cluster) {
 	for i, c := range clusters {
 		line := fmt.Sprintf("%-4v", i+1)
 		line += fmt.Sprintf(" %8.3f", c.Center)
 		line += fmt.Sprintf(" %8.3f", c.Variance)
 		for _, v := range c.Values {
-			line += fmt.Sprintf(" [%-12v %-.3f]", v.OID, v.At)
+			r := v.(record)
+			line += fmt.Sprintf(" [%-12v %-.3f]", r.OID, r.At)
 		}
 
 		fmt.Fprintf(f, "%s\n", line)

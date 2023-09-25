@@ -4,11 +4,6 @@ import (
 	"sort"
 )
 
-type Record struct {
-	OID string
-	At  float64
-}
-
 type Criterion interface {
 	Dissimilarity(j, i int, sum_x, sum_x_sq, sum_w, sum_w_sq []float64) float64
 }
@@ -16,10 +11,10 @@ type Criterion interface {
 type Cluster struct {
 	Center   float64
 	Variance float64
-	Values   []Record
+	Values   []any
 }
 
-func CKMeans1dDp(data []Record, weights []float64, krange ...int) []Cluster {
+func CKMeans1dDp(data []any, weights []float64, f func(v any) float64, krange ...int) []Cluster {
 	// validate inputs
 	if data == nil || len(data) == 0 {
 		return []Cluster{}
@@ -30,7 +25,7 @@ func CKMeans1dDp(data []Record, weights []float64, krange ...int) []Cluster {
 	}
 
 	// sort and order data
-	x := make([]Record, len(data))
+	x := make([]float64, len(data))
 	w := make([]float64, len(data))
 	order := make([]int, len(data))
 
@@ -38,16 +33,16 @@ func CKMeans1dDp(data []Record, weights []float64, krange ...int) []Cluster {
 		order[i] = i
 	}
 
-	sort.SliceStable(order, func(i, j int) bool { return data[order[i]].At < data[order[j]].At })
+	sort.SliceStable(order, func(i, j int) bool { return f(data[order[i]]) < f(data[order[j]]) })
 
 	if weights == nil {
 		for i := range data {
-			x[i] = data[order[i]]
+			x[i] = f(data[order[i]])
 			w[i] = 1.0
 		}
 	} else {
 		for i := range data {
-			x[i] = data[order[i]]
+			x[i] = f(data[order[i]])
 			w[i] = weights[order[i]]
 		}
 	}
@@ -63,7 +58,6 @@ func CKMeans1dDp(data []Record, weights []float64, krange ...int) []Cluster {
 			kmax++
 			q = p
 		}
-
 	}
 
 	if len(krange) > 0 {
@@ -98,7 +92,7 @@ func CKMeans1dDp(data []Record, weights []float64, krange ...int) []Cluster {
 	return clustered
 }
 
-func ckmeans(x []Record, w []float64, kmin, kmax int) (int, []int, []float64, []float64) {
+func ckmeans(x []float64, w []float64, kmin, kmax int) (int, []int, []float64, []float64) {
 	smawk := SMAWK{
 		criterionx: &L2{},
 	}
@@ -134,7 +128,7 @@ func ckmeans(x []Record, w []float64, kmin, kmax int) (int, []int, []float64, []
 
 	for i := range x {
 		ix := clusters[i]
-		sum[ix] += x[i].At * w[i]
+		sum[ix] += x[i] * w[i]
 		sumw[ix] += w[i]
 	}
 
@@ -144,7 +138,7 @@ func ckmeans(x []Record, w []float64, kmin, kmax int) (int, []int, []float64, []
 
 	for i := range x {
 		ix := clusters[i]
-		withinss[ix] += w[i] * (x[i].At*x[i].At - 2*x[i].At*centers[ix] + centers[ix]*centers[ix])
+		withinss[ix] += w[i] * (x[i]*x[i] - 2*x[i]*centers[ix] + centers[ix]*centers[ix])
 		count[ix] += 1
 	}
 
