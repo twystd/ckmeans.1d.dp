@@ -28,8 +28,8 @@ func fill_dp_matrix(x, w []float64, S [][]float64, J [][]int, smawk SMAWK) {
 		sum_w_sq[i] = sum_w_sq[i-1] + w[i]*w[i]
 
 		// NOTE: using same dissimilarity as SMAWK - original algorithm potentially (but not really) allowed for alternative criterion here
-        //       i.e. not convinced embedding criterion in SMAWK is all that correct
-		S[0][i] = smawk.dissimilarity(0, i, sum_x, sum_x_sq, sum_w, sum_w_sq) 
+		//       i.e. not convinced embedding criterion in SMAWK is all that correct
+		S[0][i] = smawk.dissimilarity(0, i, sum_x, sum_x_sq, sum_w, sum_w_sq)
 		J[0][i] = 0
 	}
 
