@@ -1,6 +1,6 @@
 package ckmeans
 
-func fill_dp_matrix(x, w []float64, S [][]float64, J [][]int) {
+func fill_dp_matrix(x, w []float64, S [][]float64, J [][]int, smawk SMAWK) {
 	K := len(S)
 	N := len(S[0])
 
@@ -27,7 +27,9 @@ func fill_dp_matrix(x, w []float64, S [][]float64, J [][]int) {
 		sum_w[i] = sum_w[i-1] + w[i]
 		sum_w_sq[i] = sum_w_sq[i-1] + w[i]*w[i]
 
-		S[0][i] = dissimilarity(0, i, sum_x, sum_x_sq, sum_w, sum_w_sq)
+		// NOTE: using same dissimilarity as SMAWK - original algorithm potentially (but not really) allowed for alternative criterion here
+        //       i.e. not convinced embedding criterion in SMAWK is all that correct
+		S[0][i] = smawk.dissimilarity(0, i, sum_x, sum_x_sq, sum_w, sum_w_sq) 
 		J[0][i] = 0
 	}
 
@@ -42,7 +44,7 @@ func fill_dp_matrix(x, w []float64, S [][]float64, J [][]int) {
 			imin = N - 1
 		}
 
-		fill_row_q_SMAWK(imin, N-1, q, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq)
+		smawk.fill_row_q_SMAWK(imin, N-1, q, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq)
 	}
 }
 
@@ -65,63 +67,24 @@ func backtrackWeighted(x, y []float64, J [][]int, counts []int, weights []float6
 	}
 }
 
-func backtrackWeightedX(x, y []float64, J [][]int, cluster []int, weights []float64) {
+func backtrackWeightedX(x, y []float64, J [][]int) []int {
 	K := len(J)
 	N := len(J[0])
+	clusters := make([]int, N)
+
 	cluster_right := N - 1
 
-	centers := make([]float64, K)  // TODO remove once withinss etc have been extracted
-	withinss := make([]float64, K) // TODO remove once withinss etc have been extracted
-
-	// Backtrack the clusters from the dynamic programming matrix
 	for k := K - 1; k >= 0; k-- {
 		cluster_left := J[k][cluster_right]
 
 		for i := cluster_left; i <= cluster_right; i++ {
-			cluster[i] = k
+			clusters[i] = k
 		}
-
-		sum := 0.0
-		weight := 0.0
-
-		for i := cluster_left; i <= cluster_right; i++ {
-			sum += x[i] * y[i]
-			weight += y[i]
-		}
-
-		centers[k] = sum / weight
-
-		for i := cluster_left; i <= cluster_right; i++ {
-			withinss[k] += y[i] * (x[i] - centers[k]) * (x[i] - centers[k])
-		}
-
-		weights[k] = weight
 
 		if k > 0 {
 			cluster_right = cluster_left - 1
 		}
 	}
-}
 
-func dissimilarity(j, i int, sum_x, sum_x_sq, sum_w, sum_w_sq []float64) float64 {
-	return ssq(j, i, sum_x, sum_x_sq, sum_w)
-}
-
-func ssq(j, i int, sum_x, sum_x_sq, sum_w []float64) float64 {
-	sji := 0.0
-
-	if sum_w[j] >= sum_w[i] {
-		sji = 0.0
-	} else if j > 0 {
-		muji := (sum_x[i] - sum_x[j-1]) / (sum_w[i] - sum_w[j-1])
-		sji = sum_x_sq[i] - sum_x_sq[j-1] - (sum_w[i]-sum_w[j-1])*muji*muji
-	} else {
-		sji = sum_x_sq[i] - sum_x[i]*sum_x[i]/sum_w[i]
-	}
-
-	if sji < 0.0 {
-		sji = 0.0
-	}
-
-	return sji
+	return clusters
 }

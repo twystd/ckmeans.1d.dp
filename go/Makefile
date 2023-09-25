@@ -1,3 +1,5 @@
+.PHONY: integration-tests
+
 all: test      \
 	 benchmark \
      coverage
@@ -19,6 +21,12 @@ test: build
 
 run: build
 	./bin/ckmeans --debug ../test/taps.txt
+
+integration-tests: build
+	mkdir -p ../test/tmp
+	rm -f ../test/tmp/*
+	./bin/ckmeans --out ../test/tmp/taps.txt ../test/taps.txt
+	diff ../test/expected ../test/tmp
 
 vet: build
 	go vet ./...
