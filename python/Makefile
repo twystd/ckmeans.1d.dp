@@ -33,7 +33,7 @@ publish: release
 #	python3 -m twine upload --repository pypi     -u __token__ --skip-existing dist/*
 
 debug: build
-	cd examples/basic && export PYTHONPATH=../../src && python3 main.py --data ../test/taps.txt
+	cd examples/basic && export PYTHONPATH=../../src && python3 main.py --data data.txt
 
 usage: build
 

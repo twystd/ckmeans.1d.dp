@@ -27,8 +27,8 @@ def main():
     debug = args.debug
 
     try:
-        data = []
-        weights = []
+        data = read(datafile)
+        weights = None
         ckmeans.ckmeans_1d_dp(data, weights)
     except Exception as x:
         print()
@@ -38,6 +38,20 @@ def main():
             print(traceback.format_exc())
 
         sys.exit(1)
+
+
+def read(file):
+    data = []
+    with open(file, 'r', newline='') as f:
+        for line in f:
+            tokens = line.split()
+            for token in tokens:
+                try:
+                    data.append(float(token))
+                except ValueError:
+                    pass
+
+    return data
 
 
 def usage():
