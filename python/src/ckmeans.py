@@ -29,7 +29,6 @@ def ckmeans_1d_dp(data, weights):
             x[i] = data[order[i]]
             w[i] = weights[order[i]]
 
-    print(x[0:16])
     # calculate range of K
     # // TODO: should this include weights??
     kmin = 1
