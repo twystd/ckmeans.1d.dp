@@ -7,9 +7,10 @@ update:
 update-release:
 
 format: 
+	yapf -ri .
 	yapf -ri src
 #	yapf -ri test
-	yapf -ri examples
+# 	yapf -ri examples
 
 build: format
 
@@ -33,7 +34,7 @@ publish: release
 #	python3 -m twine upload --repository pypi     -u __token__ --skip-existing dist/*
 
 debug: build
-	cd examples/basic && export PYTHONPATH=../../src && python3 main.py --data data.txt
+	export PYTHONPATH=./src && python3 main.py --data data.txt
 
 usage: build
 

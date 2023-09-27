@@ -47,6 +47,7 @@ def read(file):
             tokens = line.split()
             for token in tokens:
                 try:
+                    print(token, float(token))
                     data.append(float(token))
                 except ValueError:
                     pass
