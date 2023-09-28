@@ -34,7 +34,7 @@ publish: release
 #	python3 -m twine upload --repository pypi     -u __token__ --skip-existing dist/*
 
 debug: build
-	export PYTHONPATH=./src && python3 main.py --data data.txt
+	export PYTHONPATH=./src && python3 main.py --debug --data data.txt
 
 usage: build
 

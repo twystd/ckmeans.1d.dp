@@ -2,8 +2,8 @@
 
 import argparse
 import sys
-import traceback
 import ckmeans
+import traceback
 
 from trace import Trace
 

@@ -29,7 +29,6 @@ func (sm *SMAWK) smawk(imin, imax, istep, q int, js []int, S [][]float64, J [][]
 		imax_odd := imin_odd + (imax-imin_odd)/istepx2*istepx2
 
 		sm.smawk(imin_odd, imax_odd, istepx2, q, js_odd, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq)
-
 		sm.fill_even_positions(imin, imax, istep, q, js, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq)
 	}
 }
