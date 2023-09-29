@@ -1,7 +1,15 @@
 package ckmeans
 
+import (
+	"fmt"
+)
+
 type SMAWK struct {
 	criterionx Criterion
+}
+
+func (sm *SMAWK) dissimilarity(j, i int, sum_x, sum_x_sq, sum_w, sum_w_sq []float64) float64 {
+	return sm.criterionx.Dissimilarity(j, i, sum_x, sum_x_sq, sum_w, sum_w_sq)
 }
 
 func (sm *SMAWK) fill_row_q_SMAWK(imin, imax, q int, S [][]float64, J [][]int, sum_x, sum_x_sq, sum_w, sum_w_sq []float64) {
@@ -18,15 +26,20 @@ func (sm *SMAWK) fill_row_q_SMAWK(imin, imax, q int, S [][]float64, J [][]int, s
 
 func (sm *SMAWK) smawk(imin, imax, istep, q int, js []int, S [][]float64, J [][]int, sum_x, sum_x_sq, sum_w, sum_w_sq []float64) {
 	if imax-imin <= 0*istep {
+		fmt.Printf("awooogah/1\n")
 		sm.find_min_from_candidates(imin, imax, istep, q, js, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq)
 	} else {
 		js_odd := make([]int, len(js))
 
 		sm.reduce_in_place(imin, imax, istep, q, js, js_odd, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq)
 
+		// fmt.Printf("%v\n", js_odd)
+
 		istepx2 := istep << 1
 		imin_odd := imin + istep
 		imax_odd := imin_odd + (imax-imin_odd)/istepx2*istepx2
+
+		fmt.Printf("%v %v %v\n", istepx2, imin_odd, imax_odd)
 
 		sm.smawk(imin_odd, imax_odd, istepx2, q, js_odd, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq)
 		sm.fill_even_positions(imin, imax, istep, q, js, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq)
@@ -36,6 +49,7 @@ func (sm *SMAWK) smawk(imin, imax, istep, q int, js []int, S [][]float64, J [][]
 func (sm *SMAWK) find_min_from_candidates(imin, imax, istep, q int, js []int, S [][]float64, J [][]int, sum_x, sum_x_sq, sum_w, sum_w_sq []float64) {
 	rmin_prev := 0
 
+	fmt.Printf(">> %v %v %v\n", imin, imax, istep)
 	for i := imin; i <= imax; i += istep {
 		rmin := rmin_prev
 
@@ -111,6 +125,7 @@ func (sm *SMAWK) reduce_in_place(imin, imax, istep, q int, js, js_red []int, S [
 		right++
 	}
 
+	// FIXME leftover weirdness from 'R' probably
 	tmp := make([]int, m)
 	copy(tmp, js_red)
 	js_red = tmp
@@ -171,8 +186,4 @@ func (sm *SMAWK) fill_even_positions(imin, imax, istep, q int, js []int, S [][]f
 		r--
 		jl = jh
 	}
-}
-
-func (sm *SMAWK) dissimilarity(j, i int, sum_x, sum_x_sq, sum_w, sum_w_sq []float64) float64 {
-	return sm.criterionx.Dissimilarity(j, i, sum_x, sum_x_sq, sum_w, sum_w_sq)
 }

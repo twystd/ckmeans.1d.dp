@@ -11,7 +11,7 @@ def fill_dp_matrix(x, w, S, J, smawk):
     sum_w_sq = array('d', [0.0]) * len(w)
 
     # jseq = []int{}
-    shift = x[N // 2]  # median. used to shift the values of x to improve numerical stability
+    shift = x[N // 2]  # median (used to shift the values of x to improve numerical stability)
 
     sum_x[0] = w[0] * (x[0] - shift)
     sum_x_sq[0] = w[0] * (x[0] - shift) * (x[0] - shift)
@@ -29,7 +29,7 @@ def fill_dp_matrix(x, w, S, J, smawk):
 
         # NTS: using same dissimilarity as SMAWK - original R algorithm potentially (but not really) allowed
         #      for alternative criterion here i.e. not convinced embedding criterion in SMAWK is all that
-        #      necessary and/or correct.
+        #      necessary (and/or correct)
         S[0][i] = smawk.dissimilarity(0, i, sum_x, sum_x_sq, sum_w, sum_w_sq)
         J[0][i] = 0
 

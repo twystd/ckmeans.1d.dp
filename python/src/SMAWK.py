@@ -1,4 +1,7 @@
+import pdb
+
 from array import array
+
 
 class SMAWK:
 
@@ -16,23 +19,26 @@ class SMAWK:
             js[i] = absv
             absv = absv + 1
 
-        # TODO 
-        # self.smawk(imin, imax, 1, q, js, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq)
+        self.smawk(imin, imax, 1, q, js, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq)
 
     def smawk(self, imin, imax, istep, q, js, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq):
+        breakpoint()
         if imax - imin <= 0 * istep:
+            print('awoogah/1')
             self.find_min_from_candidates(imin, imax, istep, q, js, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq)
         else:
             js_odd = array('i', [0]) * len(js)
 
-        self.reduce_in_place(imin, imax, istep, q, js, js_odd, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq)
+            self.reduce_in_place(imin, imax, istep, q, js, js_odd, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq)
 
-        istepx2 = istep << 1
-        imin_odd = imin + istep
-        imax_odd = imin_odd + (imax - imin_odd) / istepx2 * istepx2
+            istepx2 = istep << 1
+            imin_odd = imin + istep
+            imax_odd = imin_odd + (imax - imin_odd) / istepx2 * istepx2
 
-        self.smawk(imin_odd, imax_odd, istepx2, q, js_odd, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq)
-        self.fill_even_positions(imin, imax, istep, q, js, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq)
+            print(istepx2, imin_odd, imax_odd)
+
+            self.smawk(imin_odd, imax_odd, istepx2, q, js_odd, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq)
+            self.fill_even_positions(imin, imax, istep, q, js, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq)
 
     def fill_even_positions(self, imin, imax, istep, q, js, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq):
         n = len(js)
@@ -68,7 +74,9 @@ class SMAWK:
                 if jabs > i:
                     break
 
-                if jabs >= J[q - 1][i]:
+                if jabs < J[q - 1][i]:
+                    pass
+                else:
                     s = self.dissimilarity(jabs, i, sum_x, sum_x_sq, sum_w, sum_w_sq)
                     Sj = S[q - 1][jabs - 1] + s
 
@@ -78,10 +86,10 @@ class SMAWK:
                     elif S[q - 1][jabs - 1] + sjimin > S[q][i]:
                         break
 
-                    r = r + 1
+                r = r + 1
 
-        r = r - 1
-        jl = jh
+            r = r - 1
+            jl = jh
 
     def reduce_in_place(self, imin, imax, istep, q, js, js_red, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq):
         N = (imax - imin) // istep + 1
@@ -122,13 +130,14 @@ class SMAWK:
                     left = left - 1
                 else:
                     right = right + 1
-            m = m - 1
+
+                m = m - 1
 
         for r in range(left + 1, m):
             js_red[r] = js_red[right]
             right = right + 1
 
-        # ??? leftover weirdness from 'R' probably
+        # FIXME leftover weirdness from 'R' probably
         tmp = array('i', [0]) * m
         for i in range(0, m):
             tmp[i] = js_red[i]
@@ -138,6 +147,7 @@ class SMAWK:
     def find_min_from_candidates(self, imin, imax, istep, q, js, S, J, sum_x, sum_x_sq, sum_w, sum_w_sq):
         rmin_prev = 0
 
+        print('>>', imin, imax + 1, istep)
         for i in range(imin, imax + 1, istep):
             rmin = rmin_prev
 
